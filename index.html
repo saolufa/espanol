@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b6e8a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Español">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Español desde cero</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+/* Layout: appli mobile en une colonne, deux onglets en bas (Aprender / Practicar), sous-onglets en pastilles */
+:root{
+  --bg:#eef2f1; --card:#ffffff; --fg:#13212b; --muted:#5a6b76; --line:#d5dedd;
+  --accent:#0b6e8a; --accent-ink:#ffffff; --accent-soft:#dff0f5; --hot:#c2410c; --hot-soft:#fdeadf;
+  --ok:#1b7a4b; --ok-soft:#e1f3e9; --ko:#b42318; --ko-soft:#fdecea;
+  --display:"Outfit","Segoe UI",system-ui,sans-serif;
+  --body:"Nunito Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1a20; --card:#17262e; --fg:#e8f0f2; --muted:#93a6af; --line:#27404b;
+  --accent:#4cc3e0; --accent-ink:#06222b; --accent-soft:#12394a; --hot:#ff9a62; --hot-soft:#3a2418;
+  --ok:#59d494; --ok-soft:#14332a; --ko:#ff8a7d; --ko-soft:#3a1e1b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a20; --card:#17262e; --fg:#e8f0f2; --muted:#93a6af; --line:#27404b;
+  --accent:#4cc3e0; --accent-ink:#06222b; --accent-soft:#12394a; --hot:#ff9a62; --hot-soft:#3a2418;
+  --ok:#59d494; --ok-soft:#14332a; --ko:#ff8a7d; --ko-soft:#3a1e1b; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.45}
+*{box-sizing:border-box}
+.wrap{max-width:560px;margin:0 auto;padding-block:16px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-weight:700;font-size:1.5rem;margin:0;letter-spacing:-.01em}
+h1 small{display:block;font-family:var(--body);font-weight:600;font-size:.8rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:700;font-size:1.15rem;margin:0}
+button{font:inherit;color:inherit}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.muted{color:var(--muted);font-size:.9rem}
+.tbl{width:100%;border-collapse:collapse}
+.tbl td,.tbl th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:baseline}
+.tbl tr:last-child td{border-bottom:0}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.pron{color:var(--muted);width:48%}
+.form{font-family:var(--display);font-weight:700;font-size:1.1rem}
+.scroll{overflow-x:auto}
+.note{background:var(--hot-soft);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.note b{color:var(--hot)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.cell{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:8px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:0}
+.cell b{font-family:var(--display);font-size:1.3rem;line-height:1.1}
+.cell span{font-size:.88rem;color:var(--muted)}
+.cell:hover{border-color:var(--accent)}
+.list{display:flex;flex-direction:column}
+.row{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding:9px 0;background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%;cursor:pointer}
+.row:last-child{border-bottom:0}
+.row .es{font-weight:700;flex:1;min-width:0}
+.row .fr{color:var(--muted);flex:1;min-width:0}
+.ico{width:18px;height:18px;flex:none;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn{border:0;border-radius:10px;padding:12px 18px;background:var(--accent);color:var(--accent-ink);font-weight:700;cursor:pointer;align-self:flex-start}
+.btn.ghost{background:transparent;color:var(--fg);border:1.5px solid var(--line)}
+.btn:focus-visible,.chip:focus-visible,.cell:focus-visible,.row:focus-visible,.tab:focus-visible,.deck:focus-visible,.opt:focus-visible,input:focus-visible{outline:3px solid var(--hot);outline-offset:2px}
+.decks{display:grid;gap:10px}
+.deck{border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:14px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.deck:hover{border-color:var(--accent)}
+.deck h2{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.deck h2 span{font-family:var(--body);font-weight:700;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0}
+.qtag{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--hot);font-weight:700}
+.q{font-family:var(--display);font-weight:700;font-size:1.7rem;line-height:1.2;margin:0;overflow-wrap:anywhere}
+.q small{font-family:var(--body);font-weight:600;font-size:.95rem;color:var(--muted);display:block;margin-top:4px}
+.in{width:100%;font:inherit;font-size:1.2rem;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg)}
+.keys{display:flex;gap:6px;flex-wrap:wrap}
+.key{min-width:40px;border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:7px 0;font-weight:700;cursor:pointer}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.good{border-color:var(--ok);background:var(--ok-soft)}
+.opt.bad{border-color:var(--ko);background:var(--ko-soft)}
+.fb{border-radius:10px;padding:12px 14px;font-size:.95rem}
+.fb.ok{background:var(--ok-soft);border-left:4px solid var(--ok)}
+.fb.ko{background:var(--ko-soft);border-left:4px solid var(--ko)}
+.fb b{display:block;font-family:var(--display);font-size:1.15rem}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.big{font-family:var(--display);font-weight:700;font-size:3rem;margin:0;font-variant-numeric:tabular-nums}
+.recap{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.recap li{border-top:1px solid var(--line);padding-top:8px;font-size:.95rem}
+.recap b{color:var(--ok)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px max(16px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));gap:8px;justify-content:center}
+.tab{flex:1;max-width:272px;border:0;background:transparent;border-radius:10px;padding:10px;font-family:var(--display);font-weight:700;font-size:1rem;cursor:pointer;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.say{color:var(--accent);background:none;border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:600;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><small>IÉSEG · Español N1 · unidades 0, 1 y 2</small>Español desde cero</h1>
+  <div id="app"></div>
+</div>
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button class="tab" role="tab" id="t-learn" aria-selected="true">Aprender</button>
+  <button class="tab" role="tab" id="t-practice" aria-selected="false">Practicar</button>
+</nav>
+
+<script>
+/* ===================== DONNÉES DU COURS ===================== */
+const P = ['yo','tú','él / ella / usted','nosotros / nosotras','vosotros / vosotras','ellos / ellas / ustedes'];
+const V = {
+  ser:{fr:'être (nom, origine, profession)',f:['soy','eres','es','somos','sois','son'],note:'Irrégulier. <b>Ser</b> sert à dire qui on est : <i>Soy estudiante. Es de México.</i>'},
+  tener:{fr:'avoir (et l\'âge)',f:['tengo','tienes','tiene','tenemos','tenéis','tienen'],note:'Irrégulier. L\'âge se dit avec <b>tener</b> : <i>Tengo 20 años.</i>'},
+  llamarse:{fr:'s\'appeler',f:['me llamo','te llamas','se llama','nos llamamos','os llamáis','se llaman'],note:'Verbe pronominal : le petit mot (me, te, se…) est obligatoire.'},
+  gustar:{fr:'aimer (plaire)',f:['me gusta','te gusta','le gusta','nos gusta','os gusta','les gusta'],note:'<i>Me gusta la paella</i> (+ nom). <i>Me gustaría visitar…</i> (+ verbe) = j\'aimerais.'},
+  hablar:{fr:'parler (-ar)',f:['hablo','hablas','habla','hablamos','habláis','hablan'],note:'Régulier en <b>-ar</b>.'},
+  estudiar:{fr:'étudier (-ar)',f:['estudio','estudias','estudia','estudiamos','estudiáis','estudian'],note:'Régulier en <b>-ar</b>.'},
+  comer:{fr:'manger (-er)',f:['como','comes','come','comemos','coméis','comen'],note:'Régulier en <b>-er</b>.'},
+  vivir:{fr:'habiter, vivre (-ir)',f:['vivo','vives','vive','vivimos','vivís','viven'],note:'Régulier en <b>-ir</b>.'},
+  querer:{fr:'vouloir',f:['quiero','quieres','quiere','queremos','queréis','quieren'],note:'<b>e → ie</b> sauf nosotros et vosotros. <i>Quiero viajar.</i>'},
+  entender:{fr:'comprendre',f:['entiendo','entiendes','entiende','entendemos','entendéis','entienden'],note:'<b>e → ie</b> sauf nosotros et vosotros.'},
+  saber:{fr:'savoir',f:['sé','sabes','sabe','sabemos','sabéis','saben'],note:'Seul <b>yo</b> est irrégulier : <i>sé</i>.'},
+  conocer:{fr:'connaître',f:['conozco','conoces','conoce','conocemos','conocéis','conocen'],note:'Seul <b>yo</b> est irrégulier : <i>conozco</i>.'},
+  hacer:{fr:'faire',f:['hago','haces','hace','hacemos','hacéis','hacen'],note:'Seul <b>yo</b> est irrégulier : <i>hago</i>.'}
+};
+
+const U=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'];
+const T={3:'treinta',4:'cuarenta',5:'cincuenta',6:'sesenta',7:'setenta',8:'ochenta',9:'noventa'};
+function num(n){ if(n<30) return U[n]; if(n===100) return 'cien'; const t=Math.floor(n/10),u=n%10; return u?T[t]+' y '+U[u]:T[t]; }
+
+// [espagnol, français, catégorie]
+const W = [
+ ['hola','salut','Saludos'],['buenos días','bonjour (matin)','Saludos'],['buenas tardes','bon après-midi','Saludos'],['buenas noches','bonsoir / bonne nuit','Saludos'],['adiós','au revoir','Saludos'],['gracias','merci','Saludos'],['por favor','s\'il vous plaît','Saludos'],['sí','oui','Saludos'],['no','non','Saludos'],
+ ['rojo','rouge','Colores'],['naranja','orange','Colores'],['amarillo','jaune','Colores'],['verde','vert','Colores'],['azul','bleu','Colores'],['morado','violet','Colores'],['rosa','rose','Colores'],['marrón','marron','Colores'],['negro','noir','Colores'],['blanco','blanc','Colores'],
+ ['lunes','lundi','Días'],['martes','mardi','Días'],['miércoles','mercredi','Días'],['jueves','jeudi','Días'],['viernes','vendredi','Días'],['sábado','samedi','Días'],['domingo','dimanche','Días'],
+ ['España','Espagne','Países'],['México','Mexique','Países'],['Argentina','Argentine','Países'],['Colombia','Colombie','Países'],['Chile','Chili','Países'],['Francia','France','Países'],
+ ['español / española','espagnol(e)','Países'],['mexicano / mexicana','mexicain(e)','Países'],['argentino / argentina','argentin(e)','Países'],['colombiano / colombiana','colombien(ne)','Países'],['chileno / chilena','chilien(ne)','Países'],['francés / francesa','français(e)','Países'],
+ ['cantante','chanteur / chanteuse','Profesiones'],['actor','acteur','Profesiones'],['actriz','actrice','Profesiones'],['director','réalisateur','Profesiones'],['escritor','écrivain','Profesiones'],['futbolista','footballeur','Profesiones'],['profesor','professeur','Profesiones'],['estudiante','étudiant(e)','Profesiones'],
+ ['la madre','la mère','Familia'],['el padre','le père','Familia'],['el hermano','le frère','Familia'],['la hermana','la sœur','Familia'],['el hijo','le fils','Familia'],['la hija','la fille','Familia'],['el abuelo','le grand-père','Familia'],['la abuela','la grand-mère','Familia'],['el tío','l\'oncle','Familia'],['la tía','la tante','Familia'],['el primo','le cousin','Familia'],
+ ['leer','lire','Tiempo libre'],['viajar','voyager','Tiempo libre'],['cantar','chanter','Tiempo libre'],['bailar','danser','Tiempo libre'],['nadar','nager','Tiempo libre'],['escuchar música','écouter de la musique','Tiempo libre'],['ver películas','regarder des films','Tiempo libre'],['practicar deporte','faire du sport','Tiempo libre'],
+ ['¿cómo te llamas?','comment tu t\'appelles ?','Preguntas'],['¿de dónde eres?','tu es d\'où ?','Preguntas'],['¿dónde vives?','où habites-tu ?','Preguntas'],['¿qué estudias?','qu\'étudies-tu ?','Preguntas'],['¿qué idiomas hablas?','quelles langues parles-tu ?','Preguntas'],['¿cuántos años tienes?','quel âge as-tu ?','Preguntas'],['¿qué significa…?','que signifie… ?','Preguntas'],
+ ['¿quién?','qui ?','Preguntas'],['¿qué?','quoi ? / que ?','Preguntas'],['¿cómo?','comment ?','Preguntas'],['¿dónde?','où ?','Preguntas'],['¿cuántos?','combien ?','Preguntas'],['¿por qué?','pourquoi ?','Preguntas'],
+ ['muy','très','Palabras útiles'],['bastante','assez','Palabras útiles'],['un poco','un peu','Palabras útiles'],['porque','parce que','Palabras útiles'],['para','pour (but)','Palabras útiles'],['también','aussi','Palabras útiles'],
+ ['la casa','la maison','Palabras útiles'],['el libro','le livre','Palabras útiles'],['el amigo','l\'ami','Palabras útiles'],['la universidad','l\'université','Palabras útiles'],['la clase','le cours','Palabras útiles'],['la canción','la chanson','Palabras útiles'],['el verano','l\'été','Palabras útiles'],['la ciudad','la ville','Palabras útiles']
+];
+const CATS=[...new Set(W.map(w=>w[2]))];
+
+/* ===================== OUTILS ===================== */
+const $=s=>document.querySelector(s);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let store={}; try{store=JSON.parse(localStorage.getItem('esp-cero')||'{}')||{};}catch(e){store={};}
+const save=()=>{try{localStorage.setItem('esp-cero',JSON.stringify(store));}catch(e){}};
+const canSpeak=(()=>{try{return 'speechSynthesis' in window;}catch(e){return false;}})();
+function say(t){ if(!canSpeak) return; try{ const u=new SpeechSynthesisUtterance(t.replace(/[¿?¡!]/g,'')); u.lang='es-ES'; u.rate=.85; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
+const SPK='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const norm=s=>String(s).toLowerCase().trim().replace(/[¿?¡!.,]/g,'').replace(/\s+/g,' ');
+const fold=s=>norm(s).replace(/ñ/g,'\u0001').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\u0001/g,'ñ');
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ===================== ONGLET APRENDER ===================== */
+let tab='learn', sub='verbos', verb='ser', cat=CATS[0];
+
+function renderLearn(){
+  const subs=[['verbos','Verbos'],['numeros','Números'],['vocab','Vocabulario'],['oral','Oral']];
+  let h=`<div class="chips" role="tablist">${subs.map(s=>`<button class="chip" data-sub="${s[0]}" aria-pressed="${sub===s[0]}">${s[1]}</button>`).join('')}</div>`;
+  if(sub==='verbos') h+=learnVerbs();
+  else if(sub==='numeros') h+=learnNums();
+  else if(sub==='vocab') h+=learnVocab();
+  else h+=learnOral();
+  $('#app').innerHTML=h;
+  document.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{sub=b.dataset.sub;renderLearn();});
+  document.querySelectorAll('[data-verb]').forEach(b=>b.onclick=()=>{verb=b.dataset.verb;renderLearn();});
+  document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{cat=b.dataset.cat;renderLearn();});
+  document.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>say(b.dataset.say));
+}
+function learnVerbs(){
+  const v=V[verb];
+  return `<div class="chips">${Object.keys(V).map(k=>`<button class="chip" data-verb="${k}" aria-pressed="${verb===k}">${k}</button>`).join('')}</div>
+  <div class="card"><div class="top"><h2>${verb}</h2>${canSpeak?`<button class="say" data-say="${v.f.join('. ')}">${SPK}Escuchar</button>`:''}</div>
+    <div class="muted">${v.fr}</div>
+    <table class="tbl"><tbody>${P.map((p,i)=>`<tr><td class="pron">${p}</td><td class="form">${v.f[i]}</td></tr>`).join('')}</tbody></table>
+    <div class="note">${v.note}</div></div>
+  <div class="card"><h2>Les verbes réguliers</h2>
+    <div class="scroll"><table class="tbl"><thead><tr><th></th><th>-ar</th><th>-er</th><th>-ir</th></tr></thead><tbody>
+    ${[['yo','-o','-o','-o'],['tú','-as','-es','-es'],['él / ella / usted','-a','-e','-e'],['nosotros','-amos','-emos','-imos'],['vosotros','-áis','-éis','-ís'],['ellos / ustedes','-an','-en','-en']].map(r=>`<tr><td class="pron">${r[0]}</td><td class="form">${r[1]}</td><td class="form">${r[2]}</td><td class="form">${r[3]}</td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="muted">Retire -ar / -er / -ir de l'infinitif et ajoute la terminaison : hablar → habl<b>o</b>, habl<b>as</b>…</div></div>
+  <div class="card"><h2>Tú, usted, vosotros, ustedes</h2>
+    <div class="muted"><b>tú</b> = un ami, un étudiant · <b>usted</b> = un prof, un inconnu (poli, même forme que « il/elle »). <b>vosotros</b> = « vous » entre amis (Espagne) · <b>ustedes</b> = « vous » poli ou en Amérique latine (même forme que « ils/elles »).</div></div>`;
+}
+function learnNums(){
+  const items=[];for(let i=0;i<=30;i++)items.push(i);
+  const tens=[40,50,60,70,80,90,100];
+  const cell=n=>`<button class="cell" data-say="${num(n)}"><b>${n}</b><span>${num(n)}</span></button>`;
+  return `<div class="card"><h2>De 0 à 30</h2><div class="muted">Touche un nombre pour l'entendre.</div><div class="grid">${items.map(cell).join('')}</div></div>
+  <div class="card"><h2>Les dizaines</h2><div class="grid">${tens.map(cell).join('')}</div></div>
+  <div class="card"><h2>La règle à retenir</h2>
+    <div class="note"><b>16 à 19</b> : dieci + chiffre → <i>dieciséis</i>, <i>diecisiete</i>… (un seul mot)<br><b>21 à 29</b> : veinti + chiffre → <i>veintitrés</i> (un seul mot, accent sur 22, 23, 26)<br><b>31 à 99</b> : dizaine + <b>y</b> + chiffre, en trois mots → <i>treinta y cinco</i> (35), <i>setenta y ocho</i> (78)</div></div>`;
+}
+function learnVocab(){
+  const ws=W.filter(w=>w[2]===cat);
+  return `<div class="chips">${CATS.map(c=>`<button class="chip" data-cat="${c}" aria-pressed="${cat===c}">${c}</button>`).join('')}</div>
+  <div class="card"><div class="list">${ws.map(w=>`<button class="row" data-say="${esc(w[0])}"><span class="es">${esc(w[0])}</span><span class="fr">${esc(w[1])}</span>${canSpeak?SPK:''}</button>`).join('')}</div></div>`;
+}
+function learnOral(){
+  return `<div class="card"><h2>Se présenter</h2><div class="list">
+   ${[['Me llamo ___.','Je m\'appelle ___.'],['Soy estudiante.','Je suis étudiant(e).'],['Soy de Francia.','Je viens de France.'],['Vivo en París.','J\'habite à Paris.'],['Estudio Economía.','J\'étudie l\'économie.'],['Hablo francés e inglés.','Je parle français et anglais.'],['Tengo 20 años.','J\'ai 20 ans.'],['Me gusta la música.','J\'aime la musique.'],['Me gustaría visitar México.','J\'aimerais visiter le Mexique.']].map(r=>`<button class="row" data-say="${esc(r[0])}"><span class="es">${r[0]}</span><span class="fr">${r[1]}</span>${canSpeak?SPK:''}</button>`).join('')}
+  </div></div>
+  <div class="card"><h2>Deviner un personnage (« ¿Quién es? »)</h2><div class="list">
+   ${[['¿Es un hombre o una mujer?','Homme ou femme ?'],['¿Es español / española?','Il/elle est espagnol(e) ?'],['¿De dónde es?','Il/elle est d\'où ?'],['¿Dónde vive?','Il/elle habite où ?'],['¿Es cantante o actor?','Chanteur ou acteur ?'],['¿Habla inglés?','Il/elle parle anglais ?'],['¿Tiene más de 40 años?','Il/elle a plus de 40 ans ?'],['Sí, es… / No, no es…','Oui, il/elle est… / Non…']].map(r=>`<button class="row" data-say="${esc(r[0])}"><span class="es">${r[0]}</span><span class="fr">${r[1]}</span>${canSpeak?SPK:''}</button>`).join('')}
+  </div><div class="muted">On parle <b>de</b> la personne : 3e personne (es, tiene, vive, habla), pas « tú ».</div></div>`;
+}
+
+/* ===================== ONGLET PRACTICAR ===================== */
+let sess=null;
+const DECKS=[['verbs','Conjugación','Écris la bonne forme du verbe'],['nums','Números','Chiffres ↔ lettres, de 0 à 100'],['vocab','Vocabulario','Traduire le vocabulaire du cours'],['mix','Todo mezclado','Un peu de tout']];
+
+function pool(deck){
+  const o=[];
+  if(deck==='verbs'||deck==='mix') for(const k in V) for(let i=0;i<6;i++) o.push({id:'v:'+k+':'+i,t:'verb',k,i});
+  if(deck==='nums'||deck==='mix') for(let n=0;n<=100;n++){ o.push({id:'n:'+n+':w',t:'num',n,dir:'w'}); o.push({id:'n:'+n+':d',t:'num',n,dir:'d'}); }
+  if(deck==='vocab'||deck==='mix') for(const w of W){ o.push({id:'w:'+w[0]+':t',t:'voc',w,dir:'t'}); o.push({id:'w:'+w[0]+':c',t:'voc',w,dir:'c'}); }
+  return o;
+}
+const mastered=id=>{const s=store[id];return !!s&&s.ok>=2&&s.ok>s.ko;};
+function weight(it){
+  const s=store[it.id]; let w;
+  if(!s) w=3; else if(s.ko>=s.ok) w=5; else if(s.ok<3) w=2; else w=.4;
+  if(it.t==='num'&&it.n>30) w*=.6;
+  return w;
+}
+function pick(deck,n){
+  let p=pool(deck), out=[];
+  while(out.length<n&&p.length){
+    const tot=p.reduce((a,b)=>a+weight(b),0); let r=Math.random()*tot, k=0;
+    for(;k<p.length;k++){ r-=weight(p[k]); if(r<=0) break; }
+    const it=p.splice(Math.min(k,p.length-1),1)[0]; out.push(it);
+    if(it.t==='num') p=p.filter(x=>!(x.t==='num'&&x.n===it.n));
+    if(it.t==='voc') p=p.filter(x=>!(x.t==='voc'&&x.w[0]===it.w[0]));
+  }
+  return out;
+}
+function build(it){
+  if(it.t==='verb'){ const v=V[it.k]; return {it,kind:'type',tag:'Conjugación · '+it.k,prompt:P[it.i],sub:'<b>'+it.k+'</b> — '+v.fr,answer:v.f[it.i],note:v.note,say:v.f[it.i]}; }
+  if(it.t==='num'){
+    if(it.dir==='w') return {it,kind:'type',tag:'Números',prompt:String(it.n),sub:'Écris ce nombre en espagnol',answer:num(it.n),say:num(it.n)};
+    return {it,kind:'type',numeric:true,tag:'Números',prompt:num(it.n),sub:'Écris ce nombre en chiffres',answer:String(it.n),say:num(it.n)};
+  }
+  const w=it.w;
+  if(it.dir==='t'){ const alt=[]; const m=w[0].match(/^(el|la|los|las|un|una) (.+)$/); if(m) alt.push(m[2]); if(w[0].includes(' / ')){ w[0].split(' / ').forEach(x=>alt.push(x)); }
+    return {it,kind:'type',tag:'Vocabulario · '+w[2],prompt:w[1],sub:'Écris en espagnol',answer:w[0],alt,say:w[0]}; }
+  const others=shuffle(W.filter(x=>x[2]===w[2]&&x[0]!==w[0]).concat(W.filter(x=>x[2]!==w[2]))).slice(0,3).map(x=>x[1]);
+  return {it,kind:'choice',tag:'Vocabulario · '+w[2],prompt:w[0],sub:'Choisis la traduction',answer:w[1],options:shuffle([w[1],...others]),say:w[0]};
+}
+function judge(q,val){
+  if(q.numeric) return String(parseInt(val,10))===q.answer?'ok':'ko';
+  const acc=[q.answer,...(q.alt||[])];
+  if(acc.some(x=>norm(x)===norm(val))) return 'ok';
+  if(acc.some(x=>fold(x)===fold(val))) return 'acc';
+  return 'ko';
+}
+function record(q,res){
+  const s=store[q.it.id]||(store[q.it.id]={ok:0,ko:0});
+  if(res==='ko'){ s.ko++; sess.miss.push(q); } else { s.ok++; sess.ok++; }
+  save();
+}
+
+function renderPractice(){
+  if(!sess){
+    $('#app').innerHTML=`<div class="muted">10 questions par série. Les exercices que tu rates reviennent plus souvent.</div><div class="decks">${DECKS.map(d=>{
+      const p=pool(d[0]), m=p.filter(x=>mastered(x.id)).length, pc=Math.round(m/p.length*100);
+      return `<button class="deck" data-deck="${d[0]}"><h2>${d[1]}<span>${pc} % maîtrisé</span></h2><div class="muted">${d[2]}</div><div class="bar"><i style="width:${pc}%"></i></div></button>`;}).join('')}</div>`;
+    document.querySelectorAll('[data-deck]').forEach(b=>b.onclick=()=>startSession(b.dataset.deck));
+    return;
+  }
+  if(sess.i>=sess.qs.length) return renderEnd();
+  const q=sess.qs[sess.i]; sess.cur=q;
+  const keys=['á','é','í','ó','ú','ñ','ü','¿','¡'];
+  $('#app').innerHTML=`<div class="top"><button class="btn ghost" id="quit">Quitter</button><div class="muted">${sess.i+1} / ${sess.qs.length}</div></div>
+  <div class="bar"><i style="width:${sess.i/sess.qs.length*100}%"></i></div>
+  <section class="card"><div class="qtag">${esc(q.tag)}</div>
+    <p class="q">${esc(q.prompt)}<small>${q.sub}</small></p>
+    ${q.kind==='type'?`<input class="in" id="ans" type="text" inputmode="${q.numeric?'numeric':'text'}" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Ta réponse">
+      ${q.numeric?'':`<div class="keys">${keys.map(k=>`<button class="key" type="button" data-key="${k}">${k}</button>`).join('')}</div>`}
+      <button class="btn" id="check">Comprobar</button>`
+    :`<div class="opts">${q.options.map(o=>`<button class="opt">${esc(o)}</button>`).join('')}</div>`}
+    <div id="fb"></div></section>`;
+  $('#quit').onclick=()=>{sess=null;renderPractice();};
+  if(q.kind==='type'){
+    const inp=$('#ans'); inp.focus();
+    inp.onkeydown=e=>{ if(e.key==='Enter'){e.preventDefault(); if(!sess.done) submit(inp.value); else next();} };
+    $('#check').onclick=()=>{ if(!sess.done) submit(inp.value); };
+    document.querySelectorAll('[data-key]').forEach(b=>{
+      b.onmousedown=e=>e.preventDefault();
+      b.onclick=()=>{ if(sess.done) return; const s=inp.selectionStart??inp.value.length,e2=inp.selectionEnd??s; inp.value=inp.value.slice(0,s)+b.dataset.key+inp.value.slice(e2); inp.focus(); inp.setSelectionRange(s+1,s+1); };
+    });
+  } else {
+    document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ if(sess.done) return; submitChoice(b); });
+  }
+  sess.done=false;
+}
+function feedback(q,res){
+  const ok=res!=='ko';
+  const head=res==='ok'?'¡Correcto!':res==='acc'?'¡Correcto! Pense aux accents':'Réponse : '+esc(q.answer);
+  const accent=res==='acc'?`<div>Ça s'écrit : <b style="display:inline">${esc(q.answer)}</b></div>`:'';
+  const note=q.note&&!ok?`<div style="margin-top:6px">${q.note}</div>`:'';
+  $('#fb').innerHTML=`<div class="fb ${ok?'ok':'ko'}"><b>${head}</b>${accent}${note}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button class="btn" id="next">${sess.i+1>=sess.qs.length?'Voir mon score':'Siguiente'}</button>${canSpeak?`<button class="say" id="sayit">${SPK}Escuchar</button>`:''}</div>`;
+  const n=$('#next'); n.onclick=next; n.focus();
+  const s=$('#sayit'); if(s) s.onclick=()=>say(q.say);
+}
+function submit(val){
+  if(!val.trim()) return;
+  const q=sess.cur,res=judge(q,val); sess.done=true; record(q,res);
+  $('#ans').readOnly=true; $('#check').hidden=true; feedback(q,res);
+}
+function submitChoice(btn){
+  const q=sess.cur,ok=btn.textContent===q.answer; sess.done=true; record(q,ok?'ok':'ko');
+  document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;if(b.textContent===q.answer)b.classList.add('good');});
+  if(!ok) btn.classList.add('bad');
+  feedback(q,ok?'ok':'ko');
+}
+function next(){ sess.i++; renderPractice(); }
+function startSession(deck){ sess={deck,qs:pick(deck,10).map(build),i:0,ok:0,miss:[],done:false}; renderPractice(); }
+function renderEnd(){
+  const n=sess.qs.length, g=sess.ok;
+  const msg=g>=9?'¡Perfecto! Excelente.':g>=7?'¡Muy bien! Tu progresses vite.':g>=5?'Pas mal. Refais une série, les erreurs reviennent.':'Normal au début. Relis l\'onglet Aprender puis réessaie.';
+  $('#app').innerHTML=`<section class="card"><div class="qtag">Résultat</div><p class="big">${g}/${n}</p><p style="margin:0">${msg}</p>
+    ${sess.miss.length?`<ul class="recap">${sess.miss.map(q=>`<li>${esc(q.prompt)} <span class="muted">(${q.sub.replace(/<[^>]+>/g,'')})</span><br><b>${esc(q.answer)}</b></li>`).join('')}</ul>`:''}
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="again">Otra serie</button><button class="btn ghost" id="menu">Menu</button></div></section>`;
+  const d=sess.deck; $('#again').onclick=()=>startSession(d); $('#menu').onclick=()=>{sess=null;renderPractice();};
+}
+
+/* ===================== NAVIGATION ===================== */
+function show(t){
+  tab=t;
+  $('#t-learn').setAttribute('aria-selected',t==='learn'); $('#t-practice').setAttribute('aria-selected',t==='practice');
+  if(t==='learn') renderLearn(); else renderPractice();
+  window.scrollTo(0,0);
+}
+$('#t-learn').onclick=()=>show('learn');
+$('#t-practice').onclick=()=>show('practice');
+show('learn');
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>
