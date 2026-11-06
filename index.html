@@ -173,6 +173,15 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card)
 .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .kpi{border:2px solid var(--line);border-radius:16px;padding:12px;background:var(--card)}
 .kpi b{display:block;font-size:1.6rem}.kpi span{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+.tab{font-size:.6rem!important;letter-spacing:.02em!important;padding:6px 0!important;max-width:none!important}
+nav.tabs{gap:2px!important}.tab svg{width:23px!important;height:23px!important}
+.qtext.long{font-size:1.3rem}
+.timer{font-size:3.4rem;font-weight:900;text-align:center;color:var(--pri);font-variant-numeric:tabular-nums}
+.qa{display:flex;flex-direction:column;border-bottom:1px solid var(--line);padding:6px 0}.qa span{color:var(--ok-d)}
+textarea.in{min-height:150px;resize:vertical;font-size:1.1rem;line-height:1.35}
+.wrong{text-align:left;font-size:.92rem;border-top:1px solid var(--line);padding:8px 0;font-weight:700}
+@media (prefers-color-scheme: dark){.qa span{color:var(--ok)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -239,6 +248,202 @@ const PH=[
  ['¿Cómo te llamas?','Comment tu t\'appelles ?','preg'],['¿De dónde eres?','Tu viens d\'où ?','preg'],['¿Dónde vives?','Où habites-tu ?','preg'],['¿Qué estudias?','Qu\'étudies-tu ?','preg'],['¿Es cantante o actor?','Il est chanteur ou acteur ?','preg'],['¿Habla inglés?','Il parle anglais ?','preg'],['No, no es española.','Non, elle n\'est pas espagnole.','preg'],['Sí, vive en Estados Unidos.','Oui, il habite aux États-Unis.','preg']
 ];
 const EXTRA=['el','la','es','soy','en','de','tengo','vive','no','y','muy','un'];
+/* ===================== MODULES SUPPLÉMENTAIRES : DONNÉES ===================== */
+// Phrases à compléter par thème : [phrase, bonne réponse, [3 fausses], explication]
+const CL={
+ art:{sub:"Choisis le bon article",items:[
+  ["___ casa","la",["el","los","las"],"<i>casa</i> est féminin : <b>la</b> casa."],
+  ["___ libro","el",["la","los","las"],"<i>libro</i> est masculin : <b>el</b> libro."],
+  ["___ amigos (les amis)","los",["el","la","las"],"Masculin pluriel : <b>los</b>."],
+  ["___ canciones (les chansons)","las",["los","el","la"],"Féminin pluriel : <b>las</b>."],
+  ["Es ___ actor mexicano.","un",["una","la","las"],"<b>un</b> + nom masculin."],
+  ["Es ___ cantante colombiana.","una",["un","el","los"],"Une chanteuse : <b>una</b> cantante."],
+  ["___ clase de español","la",["el","los","las"],"<i>clase</i> est féminin."],
+  ["___ verano","el",["la","las","una"],"<i>verano</i> est masculin : <b>el</b> verano."],
+  ["Tengo ___ hermano.","un",["una","la","las"],"Un frère : <b>un</b> hermano."],
+  ["Tengo ___ hermana.","una",["un","el","los"],"Une sœur : <b>una</b> hermana."],
+  ["___ hermanas","las",["los","el","la"],"Féminin pluriel : <b>las</b>."],
+  ["___ universidad","la",["el","los","un"],"Les noms en -dad sont féminins : <b>la</b> universidad."]]},
+ gen:{sub:"Accorde le mot (genre et nombre)",items:[
+  ["Shakira es una cantante ___.","colombiana",["colombiano","colombianos","colombianas"],"Chanteuse = féminin : colombian<b>a</b>."],
+  ["Pedro Almodóvar es un director ___.","español",["española","españoles","españolas"],"Masculin singulier : español."],
+  ["Ana y María son ___.","españolas",["español","españoles","española"],"Féminin pluriel : español<b>as</b>."],
+  ["Carlos y Luis son ___.","mexicanos",["mexicano","mexicana","mexicanas"],"Masculin pluriel : mexicano<b>s</b>."],
+  ["Ella es ___.","francesa",["francés","franceses","francesas"],"Féminin de <i>francés</i> : franc<b>esa</b>."],
+  ["Es un actor muy ___.","famoso",["famosa","famosos","famosas"],"Masculin singulier : famos<b>o</b>."],
+  ["Son dos escritores ___.","argentinos",["argentino","argentina","argentinas"],"Masculin pluriel : argentino<b>s</b>."],
+  ["Es una actriz ___.","famosa",["famoso","famosos","famosas"],"Féminin singulier : famos<b>a</b>."],
+  ["Las personas son ___.","simpáticas",["simpático","simpática","simpáticos"],"Féminin pluriel : simpática<b>s</b>."],
+  ["Mi madre es ___.","simpática",["simpático","simpáticas","simpáticos"],"Féminin singulier : simpátic<b>a</b>."]]},
+ tu:{sub:"Choisis la bonne façon de parler",items:[
+  ["Tu parles à ton meilleur ami.","¿Cómo te llamas?",["¿Cómo se llama?","¿Cómo os llamáis?","¿Cómo se llaman?"],"Un ami : <b>tú</b> → te llamas."],
+  ["Tu parles à ton professeur.","¿De dónde es usted?",["¿De dónde eres?","¿De dónde sois?","¿De dónde son?"],"Un prof : <b>usted</b> + forme en « il/elle »."],
+  ["Tu parles à un inconnu dans la rue.","¿Dónde vive usted?",["¿Dónde vives?","¿Dónde vivís?","¿Dónde viven?"],"Un inconnu : <b>usted</b>."],
+  ["Tu parles à deux amis (en Espagne).","¿Qué estudiáis?",["¿Qué estudias?","¿Qué estudia?","¿Qué estudian?"],"Plusieurs amis : <b>vosotros</b> → estudiáis."],
+  ["Tu parles à un groupe de professeurs.","¿Hablan ustedes inglés?",["¿Habláis inglés?","¿Hablas inglés?","¿Habla inglés?"],"Plusieurs personnes (poli) : <b>ustedes</b> + forme en « ils/elles »."],
+  ["Tu parles à ton frère.","¿Cuántos años tienes?",["¿Cuántos años tiene usted?","¿Cuántos años tenéis?","¿Cuántos años tienen?"],"Un frère : <b>tú</b> → tienes."]]},
+ pos:{sub:"Choisis le bon possessif",items:[
+  ["___ madre se llama Ana. (ma)","Mi",["Tu","Su","Nuestra"],"mi = mon / ma."],
+  ["¿Cómo se llama ___ hermano? (ton)","tu",["mi","su","nuestro"],"tu = ton / ta."],
+  ["Ella vive con ___ padres. (ses)","sus",["su","tus","mis"],"Pluriel : <b>sus</b> (ses, leurs)."],
+  ["Nosotros tenemos ___ casa. (notre)","nuestra",["nuestro","nuestras","su"],"Il s'accorde avec « casa » : nuestr<b>a</b>."],
+  ["Tengo dos hermanos. ___ hermanos son simpáticos. (mes)","Mis",["Mi","Tus","Sus"],"Pluriel : <b>mis</b>."],
+  ["¿Dónde está ___ libro? (ton)","tu",["tus","mi","su"],"Un seul livre : <b>tu</b>."],
+  ["Él habla con ___ amigos. (ses)","sus",["su","mis","tus"],"Pluriel : <b>sus</b>."],
+  ["___ familia es simpática. (notre)","Nuestra",["Nuestro","Mi","Su"],"familia est féminin : Nuestr<b>a</b>."]]},
+ grad:{sub:"Complète avec le bon petit mot",items:[
+  ["Hablo ___ bien español. (très)","muy",["porque","para","poco"],"muy = très."],
+  ["Estudio español ___ quiero viajar. (parce que)","porque",["para","muy","también"],"porque = parce que (cause)."],
+  ["Estudio español ___ viajar. (pour)","para",["porque","muy","bastante"],"para + infinitif = pour (but)."],
+  ["Hablo inglés ___ bien. (assez)","bastante",["muy","porque","para"],"bastante = assez."],
+  ["Hablo ___ de italiano. (un peu)","un poco",["muy","bastante","porque"],"un poco de = un peu de."],
+  ["Me gusta el fútbol. Me gusta el tenis ___. (aussi)","también",["porque","para","muy"],"también = aussi."],
+  ["Estudio Economía ___ me interesa. (parce que)","porque",["para","muy","también"],"porque = parce que."],
+  ["Quiero ir a México ___ conocer la ciudad. (pour)","para",["porque","muy","también"],"para + infinitif."]]}
+};
+const ALPHA=[["a","a"],["b","be"],["c","ce"],["d","de"],["e","e"],["f","efe"],["g","ge"],["h","hache"],["i","i"],["j","jota"],["k","ka"],["l","ele"],["m","eme"],["n","ene"],["ñ","eñe"],["o","o"],["p","pe"],["q","cu"],["r","erre"],["s","ese"],["t","te"],["u","u"],["v","uve"],["w","uve doble"],["x","equis"],["y","ye"],["z","zeta"]];
+const SPELLW=["casa","libro","amigo","clase","verano","hola","gracias","rojo","verde","azul","madre","padre","lunes","sábado"];
+
+// Situations de la Ruleta
+const SIT=[
+ {t:"Te presentas",fr:"Présente-toi à un nouveau camarade : nom, origine, ville, études, âge, langues.",ph:[["Me llamo…","Je m'appelle…"],["Soy de Francia.","Je viens de France."],["Vivo en…","J'habite à…"],["Estudio Economía.","J'étudie l'économie."],["Tengo … años.","J'ai … ans."],["Hablo francés e inglés.","Je parle français et anglais."]],modelo:"¡Hola! Me llamo Ana. Soy de Francia y vivo en París. Estudio Economía y tengo veinte años. Hablo francés, inglés y un poco de español."},
+ {t:"Tu mejor amigo",fr:"Présente ton meilleur ami ou ta meilleure amie.",ph:[["Se llama…","Il/elle s'appelle…"],["Es de…","Il/elle est de…"],["Vive en…","Il/elle habite à…"],["Estudia…","Il/elle étudie…"],["Es muy simpático / simpática.","Il/elle est très sympa."],["Le gusta bailar.","Il/elle aime danser."]],modelo:"Mi mejor amigo se llama Pablo. Es de Lyon y vive en París. Estudia Economía y tiene veinte años. Es muy simpático y le gusta bailar."},
+ {t:"Tu familia",fr:"Parle de ta famille : frères, sœurs, parents, grands-parents.",ph:[["Tengo un hermano / una hermana.","J'ai un frère / une sœur."],["Mi madre se llama…","Ma mère s'appelle…"],["Mi padre es…","Mon père est…"],["Mis abuelos viven en…","Mes grands-parents habitent à…"],["Mi familia es muy…","Ma famille est très…"]],modelo:"Tengo una hermana y un hermano. Mi madre se llama Carmen y mi padre se llama Juan. Mis abuelos viven en una ciudad pequeña. Mi familia es muy simpática."},
+ {t:"Tus gustos",fr:"Dis ce que tu aimes et ce que tu aimerais faire.",ph:[["Me gusta la música.","J'aime la musique."],["Me gusta mucho…","J'aime beaucoup…"],["No me gusta…","Je n'aime pas…"],["Me gustaría visitar México.","J'aimerais visiter le Mexique."],["Me gustaría probar la paella.","J'aimerais goûter la paella."]],modelo:"Me gusta la música y me gusta el fútbol. No me gusta el café. Me gustaría visitar México y probar la comida mexicana."},
+ {t:"Tiempo libre",fr:"Parle de ce que tu fais pendant ton temps libre.",ph:[["Me gusta leer.","J'aime lire."],["Practico deporte.","Je fais du sport."],["Escucho música.","J'écoute de la musique."],["Veo películas.","Je regarde des films."],["Los sábados bailo.","Le samedi, je danse."]],modelo:"En mi tiempo libre me gusta leer y escuchar música. Los sábados practico deporte y los domingos veo películas con mis amigos."},
+ {t:"Un famoso",fr:"Décris un personnage célèbre du monde hispanique.",ph:[["Es un cantante / una cantante.","C'est un chanteur / une chanteuse."],["Es de Colombia.","Il/elle est de Colombie."],["Vive en…","Il/elle habite à…"],["Tiene … años.","Il/elle a … ans."],["Canta en español.","Il/elle chante en espagnol."]],modelo:"Shakira es una cantante colombiana. Es de Colombia y vive en Estados Unidos. Canta en español y en inglés. Es muy famosa."},
+ {t:"Tus estudios",fr:"Parle de tes études et des langues que tu parles.",ph:[["Estudio en el IÉSEG.","J'étudie à l'IÉSEG."],["Soy estudiante.","Je suis étudiant(e)."],["Hablo francés e inglés.","Je parle français et anglais."],["Hablo un poco de español.","Je parle un peu espagnol."],["Quiero hablar mejor.","Je veux mieux parler."]],modelo:"Soy estudiante y estudio en París. Hablo francés e inglés y hablo un poco de español. Quiero hablar mejor español porque me gusta."},
+ {t:"Tus planes",fr:"Dis ce que tu veux faire (querer + infinitif).",ph:[["Quiero viajar a México.","Je veux voyager au Mexique."],["Quiero aprender español.","Je veux apprendre l'espagnol."],["Quiero visitar…","Je veux visiter…"],["porque me gusta…","parce que j'aime…"],["para conocer…","pour connaître…"]],modelo:"Quiero viajar a España porque me gusta la cultura. Quiero visitar Barcelona y quiero aprender más español para hablar con la gente."},
+ {t:"Datos de contacto",fr:"Demande et donne un numéro de téléphone, un e-mail, une adresse.",ph:[["¿Cuál es tu teléfono?","Quel est ton numéro ?"],["Mi teléfono es el…","Mon numéro est le…"],["¿Cuál es tu correo?","Quel est ton e-mail ?"],["Mi correo es…","Mon e-mail est…"],["Vivo en la calle…","J'habite rue…"]],modelo:"¿Cuál es tu teléfono? Mi teléfono es el seis, uno, dos, tres, cuatro, cinco, seis, siete, ocho. ¿Y tu correo? Mi correo es ana arroba correo punto com."},
+ {t:"Preguntas a un compañero",fr:"Interviewe ton camarade : nom, origine, ville, études, langues.",ph:[["¿Cómo te llamas?","Comment tu t'appelles ?"],["¿De dónde eres?","Tu viens d'où ?"],["¿Dónde vives?","Où habites-tu ?"],["¿Qué estudias?","Qu'étudies-tu ?"],["¿Qué idiomas hablas?","Quelles langues parles-tu ?"]],modelo:"¡Hola! ¿Cómo te llamas? ¿De dónde eres? ¿Dónde vives? ¿Qué estudias? ¿Qué idiomas hablas? ¡Muy bien, gracias!"},
+ {t:"Mundo hispano",fr:"Dis ce que tu connais du monde hispanique (lieux, musique, plats).",ph:[["Conozco Madrid.","Je connais Madrid."],["No conozco México.","Je ne connais pas le Mexique."],["Me gusta la paella.","J'aime la paella."],["Me gusta la música de Bad Bunny.","J'aime la musique de Bad Bunny."],["Me gustaría visitar…","J'aimerais visiter…"]],modelo:"Conozco España y conozco un poco Argentina. Me gusta la paella y me gusta la música de Shakira. Me gustaría visitar México."},
+ {t:"Tu semana",fr:"Décris ta semaine : ce que tu fais chaque jour.",ph:[["El lunes estudio.","Le lundi, j'étudie."],["El jueves trabajo.","Le jeudi, je travaille."],["El sábado bailo.","Le samedi, je danse."],["El domingo descanso.","Le dimanche, je me repose."],["Los viernes veo a mis amigos.","Le vendredi, je vois mes amis."]],modelo:"El lunes y el martes estudio. El jueves trabajo. El sábado practico deporte y el domingo veo películas con mi familia."}
+];
+
+// Personnages du jeu « ¿Quién es? »
+const FAM=[
+ {n:"Shakira",g:"f",c:"Colombia",r:"Estados Unidos",j:"cantante",o:true},
+ {n:"Bad Bunny",g:"m",c:"Puerto Rico",r:"Puerto Rico",j:"cantante",o:false},
+ {n:"Lionel Messi",g:"m",c:"Argentina",r:"Estados Unidos",j:"futbolista",o:false},
+ {n:"Rosalía",g:"f",c:"España",r:"España",j:"cantante",o:false},
+ {n:"Pedro Almodóvar",g:"m",c:"España",r:"España",j:"director",o:true},
+ {n:"Penélope Cruz",g:"f",c:"España",r:"España",j:"actor",o:true},
+ {n:"Javier Bardem",g:"m",c:"España",r:"España",j:"actor",o:true},
+ {n:"Carlos Alcaraz",g:"m",c:"España",r:"España",j:"tenista",o:false},
+ {n:"Enrique Iglesias",g:"m",c:"España",r:"Estados Unidos",j:"cantante",o:true}
+];
+const QGROUPS=[
+ ["Persona",[["¿Es un hombre o una mujer?","g"],["¿Es español / española?","es"]]],
+ ["País",[["¿Es de México?","c:México"],["¿Es de Argentina?","c:Argentina"],["¿Es de Colombia?","c:Colombia"],["¿Es de Puerto Rico?","c:Puerto Rico"]]],
+ ["Lugar de vida",[["¿Vive en España?","r:España"],["¿Vive en Estados Unidos?","r:Estados Unidos"],["¿Vive en Puerto Rico?","r:Puerto Rico"]]],
+ ["Profesión",[["¿Es cantante?","j:cantante"],["¿Es actor / actriz?","j:actor"],["¿Es futbolista?","j:futbolista"],["¿Es director?","j:director"],["¿Es tenista?","j:tenista"]]],
+ ["Edad",[["¿Tiene más de 40 años?","o"]]]
+];
+
+// Textes du Cuadernillo de Vocable : résumés écrits pour t'entraîner (ce ne sont pas les textes du journal)
+const ARTS=[
+ {id:"barcelona",title:"Barcelona, capital de la arquitectura",tema:"Architecture · Barcelone 2026",
+  resumen:"Barcelona es la Capital Mundial de la Arquitectura en 2026. La UNESCO y la UIA le dan este título. Durante diez meses hay exposiciones, rutas y talleres para los profesionales y también para el público general.",
+  datos:["Titre donné par l'UNESCO et l'UIA","Centenaire de la mort d'Antoni Gaudí (Sagrada Familia, Parque Güell)","150 ans d'Ildefons Cerdà, urbaniste du plan de l'Eixample","Du 12 février au 13 décembre","Pour les professionnels ET pour le grand public"],
+  vocab:[["el futuro","l'avenir"],["el taller","l'atelier"],["otra figura clave","une autre figure clé"],["no solo… sino también","pas seulement… mais aussi"],["desde nuevas perspectivas","sous de nouvelles perspectives"]],
+  qs:[["¿Quién ha designado a Barcelona Capital Mundial de la Arquitectura 2026?","La UNESCO y la UIA",["El Ayuntamiento de Barcelona","La Unión Europea","El Gobierno de España"],"Titre attribué par l'UNESCO et l'UIA."],
+      ["¿De qué arquitecto se celebra el centenario de su muerte?","Antoni Gaudí",["Ildefons Cerdà","Pablo Picasso","Mark Leckey"],"100 ans de la mort de Gaudí. Cerdà, c'est 150 ans."],
+      ["¿Quién es Ildefons Cerdà?","El urbanista del Eixample",["El director de un museo","Un pintor del siglo XV","El presidente de la UIA"],"Il a dessiné le plan d'extension de Barcelone."],
+      ["¿Cuándo dura la programación?","Del 12 de febrero al 13 de diciembre",["Del 1 de enero al 31 de diciembre","Del 22 de junio al 6 de septiembre","Entre mayo y julio"],"De la Santa Eulàlia à la Santa Llúcia."]]},
+ {id:"guernica",title:"El Guernica regresa a París",tema:"Art · Réalité virtuelle",
+  resumen:"El Guernica, el cuadro de Picasso, regresa a París, pero de forma virtual. Es una experiencia de realidad virtual en el Museo Picasso de París, en el barrio del Marais.",
+  datos:["Retour 89 ans après","Musée national Picasso-Paris, au cœur du Marais","Jusqu'au 6 septembre","Titre : Las metamorfosis de Guernica","Cécile Debray, présidente du musée"],
+  vocab:[["la obra maestra","le chef-d'œuvre"],["eso sí","certes"],["una inmersión al corazón de","une plongée au cœur de"],["comprender","appréhender"],["la amplia acogida","la large réception"]],
+  qs:[["¿Cómo regresa el Guernica a París?","De forma virtual",["El cuadro original viaja a París","En una exposición de fotos","En una película de cine"],"Réalité virtuelle : le vrai tableau reste à Madrid."],
+      ["¿Dónde se presenta la experiencia?","En el Musée national Picasso-Paris, en el Marais",["En el Louvre","En el Centre Pompidou","En el Guggenheim de Bilbao"],"Au cœur du Marais."],
+      ["¿Cuántos años después regresa el Guernica?","89 años (ochenta y nueve)",["70 años (setenta)","100 años (cien)","150 años (ciento cincuenta)"],"« Ochenta y nueve años después »."],
+      ["¿Hasta cuándo se puede ver?","Hasta el 6 de septiembre",["Hasta el 12 de abril","Hasta el 13 de diciembre","Hasta el 22 de junio"],"Jusqu'au 6 septembre."]]},
+ {id:"lobos",title:"Y los lobos entraron en Madrid",tema:"Société · Protection du loup",
+  resumen:"En la Puerta del Sol de Madrid hay una escultura de un lobo de cartón piedra. Las organizaciones animalistas piden proteger al lobo ibérico y terminar con su caza.",
+  datos:["Le 22 juin, Puerta del Sol","Slogan : « Lobo vivo y protegido »","Battues arrêtées par la justice en Galice, reprises en Cantabrie et dans les Asturies","Le loup remplace l'Ours et l'Arbousier, symbole de Madrid"],
+  vocab:[["el lema","le slogan"],["la caza","la chasse"],["la batida","la battue"],["a pesar de","malgré"],["aullando","en hurlant"]],
+  qs:[["¿Qué aparece en la Puerta del Sol?","Un lobo de cartón piedra que aúlla",["Un lobo de verdad","Un nuevo Oso y el madroño","Un cuadro de Picasso"],"Une sculpture en carton-pâte."],
+      ["¿Qué piden las organizaciones animalistas?","La protección del lobo ibérico y el fin de su caza",["Más batidas de lobos","Un zoo en Madrid","Retirar el Oso y el madroño"],"Slogan : « Lobo vivo y protegido »."],
+      ["¿Dónde han paralizado los tribunales las batidas?","En Galicia",["En Cantabria","En Asturias","En Madrid"],"Paralysées en Galice, reprises ailleurs."],
+      ["¿Qué significa « a pesar de » ?","Malgré",["Grâce à","À cause de","Après"],"« A pesar de los recursos judiciales »."]]},
+ {id:"panama",title:"El canal de Panamá y la crisis de Ormuz",tema:"Économie · Commerce maritime",
+  resumen:"La tensión en el estrecho de Ormuz cambia el comercio marítimo. El canal de Panamá gana más tráfico de barcos y también más dinero por los peajes.",
+  datos:["Tension dans le détroit d'Ormuz, route principale du carburant","Environ +20 % de trafic (méthaniers, carburant)","Le canal relie plus de 170 pays","6 % du commerce maritime mondial"],
+  vocab:[["el estrecho","le détroit"],["el combustible","le carburant"],["los peajes","les péages"],["además","en outre"],["se ha beneficiado","a profité"]],
+  qs:[["¿Por qué gana el canal de Panamá?","Por la tensión en el estrecho de Ormuz",["Por obras nuevas en el canal","Porque hay menos barcos en el mundo","Por el turismo"],"La crise d'Ormuz détourne du trafic."],
+      ["¿Cuánto aumentan algunas categorías de tránsito?","Cerca del 20 %",["Un 6 %","Un 60 %","Un 40 %"],"Hausses proches de 20 %."],
+      ["¿Qué porcentaje del comercio marítimo mundial representa el canal?","El 6 %",["El 20 %","El 40 %","El 60 %"],"6 % du commerce maritime mondial."],
+      ["¿Qué significa « los peajes » ?","Les péages",["Les passagers","Les ports","Les pétroliers"],"Plus de trafic = plus de péages."]]},
+ {id:"dinamarca",title:"Dinamarca y la jubilación a los 70 años",tema:"Société · Retraite",
+  resumen:"Dinamarca aprueba una ley: la edad de jubilación sube de 67 a 70 años. Se aplica a partir de 2040. En España y en otros países europeos la referencia es 67 años.",
+  datos:["De 67 à 70 ans","À partir de 2040, pour les personnes nées après le 31/12/1970","Loi votée fin mai, sans forte opposition","En Espagne : 67 ans"],
+  vocab:[["elevará","va relever"],["la edad de jubilación","l'âge de départ à la retraite"],["aprobó una ley","a adopté une loi"],["frente a","contre / face à"],["al igual que","comme / tout comme"]],
+  qs:[["¿Cuál será la nueva edad de jubilación en Dinamarca?","70 años",["67 años","65 años","75 años"],"De 67 à 70 ans."],
+      ["¿A partir de qué año se aplica?","2040",["2026","2030","1970"],"À partir de 2040."],
+      ["¿Qué significa « la jubilación » ?","La retraite",["La jubilation","Le chômage","Le salaire"],"Faux ami : jubilación = retraite."],
+      ["¿Cuál es la edad de referencia en España?","67 años",["70 años","60 años","65 años"],"67 ans en Espagne."]]},
+ {id:"sargazo",title:"Alerta por sargazo",tema:"Environnement · Caraïbes",
+  resumen:"El sargazo es un tipo de alga marrón. Está sofocando las costas del Caribe, desde Puerto Rico hasta Guayana. Perjudica el turismo y mata la vida silvestre.",
+  datos:["Algues brunes de Porto Rico jusqu'en Guyane","Une école fermée en Martinique (gaz toxiques)","Record de 38 millions de tonnes, depuis 2011","Hausse de 40 % en 2025","Brian Barnes, université du Sud de la Floride"],
+  vocab:[["el sargazo","la sargasse"],["sofocando","en train d'asphyxier"],["matando","en tuant"],["el informe","le rapport"],["incluso","même"]],
+  qs:[["¿Qué es el sargazo?","Un tipo de algas marrones",["Un cuadro","Un pez del Caribe","Un gas tóxico"],"Des algues brunes."],
+      ["¿Dónde tuvo que cerrar una escuela?","En Martinica",["En Puerto Rico","En Florida","En Guayana"],"Gaz toxiques → école fermée en Martinique."],
+      ["¿Cuál es el récord de sargazo?","38 millones de toneladas",["20 millones de toneladas","170 millones de toneladas","6 millones de toneladas"],"Record depuis 2011."],
+      ["¿Qué universidad cita el informe?","La Universidad del Sur de Florida",["La Universidad de Madrid","La Sorbona","La Universidad de Panamá"],"Brian Barnes, Floride."]]},
+ {id:"bilbao",title:"Entre lo visible y lo invisible",tema:"Art · Guggenheim Bilbao",
+  resumen:"En el Museo Guggenheim de Bilbao hay una instalación del artista británico Mark Leckey. La obra se inspira en una pintura de Sassetta, de 1424, y tiene una banda sonora ambiental.",
+  datos:["Musée Guggenheim de Bilbao","Artiste britannique Mark Leckey","Inspiré de « Ciudad junto al mar » de Sassetta (1424)","Bande sonore : musique et voix","Jusqu'au 12/04/2026"],
+  vocab:[["un belén","une crèche"],["casi","presque"],["el entorno","l'environnement"],["está acompañada de","est accompagnée de"],["se desarrolla","se développe"]],
+  qs:[["¿Dónde está la instalación de Mark Leckey?","En el Museo Guggenheim de Bilbao",["En el Museo Picasso de París","En la Puerta del Sol","En la Sagrada Familia"],"Guggenheim de Bilbao."],
+      ["¿De qué nacionalidad es Mark Leckey?","Británico",["Español","Francés","Estadounidense"],"Piège : il n'est pas espagnol."],
+      ["¿En qué obra se inspira?","Ciudad junto al mar, de Sassetta (1424)",["El Guernica, de Picasso","La Sagrada Familia, de Gaudí","Un pastel merengado"],"Un des premiers paysages urbains."],
+      ["¿Qué acompaña la obra?","Una banda sonora ambiental",["Un vídeo de lobos","Una exposición de fotos","Un concierto de Bad Bunny"],"Bande sonore + lumière."]]},
+ {id:"cafe",title:"El « café sin especialidad »",tema:"Société · Réseaux sociaux",
+  resumen:"En España hay una protesta viral en las redes sociales contra las cafeterías de especialidad. La gente piensa que son elitistas y que sus precios son vergonzosos.",
+  datos:["Protestation virale sur les réseaux sociaux (Espagne)","Contre les cafés « specialty coffee » jugés élitistes","Ils se moquent de l'esthétique, du jargon et des manières","Prix jugés honteux ; ces cafés ressemblent à un « club privé »"],
+  vocab:[["está ganando visibilidad","gagne en visibilité"],["las redes sociales","les réseaux sociaux"],["vergonzoso","honteux"],["las formas","les manières"],["algunas cafeterías","certains cafés"]],
+  qs:[["¿Contra qué protesta la campaña ?","Contra las cafeterías specialty coffee elitistas",["Contra el café del supermercado","Contra el cierre de los bares","Contra el té"],"Elle ironise sur ces cafés."],
+      ["¿Dónde se difunde la protesta ?","En las redes sociales",["En la televisión","En un periódico","En la radio"],"Protestation virale."],
+      ["¿Qué significa « vergonzoso » ?","Honteux",["Courageux","Délicieux","Gratuit"],"« Precios vergonzosos »."]]},
+ {id:"nino",title:"La llegada de un « superniño »",tema:"Climat · El Niño",
+  resumen:"La Organización Meteorológica Mundial avisa de que El Niño se está formando. Es un fenómeno climático natural que sube las temperaturas. Puede aparecer entre mayo y julio y seguir todo el año 2026.",
+  datos:["Avertissement de l'Organisation météorologique mondiale","60 % de probabilité","Entre mai et juillet","Il peut durer toute l'année 2026","Records de chaleur et catastrophes naturelles possibles"],
+  vocab:[["enfrentarse a","être confronté à"],["peligroso","dangereux"],["el acontecimiento","l'événement"],["aún más","encore plus"],["se están formando","sont en train de se former"]],
+  qs:[["¿Quién advierte de la llegada de El Niño?","La Organización Meteorológica Mundial",["La UNESCO","La Universidad del Sur de Florida","La UIA"],"OMM."],
+      ["¿Qué probabilidad hay de que surja?","Un 60 %",["Un 20 %","Un 40 %","Un 6 %"],"60 % de probabilités."],
+      ["¿Cuándo puede emerger?","Entre mayo y julio",["Entre febrero y diciembre","En septiembre","En 2040"],"Entre mai et juillet."],
+      ["¿Qué significa « aún más » ?","Encore plus",["Pas encore","Moins","Toujours"],"« Aún más extremos »."]]}
+];
+
+// Audios de l'examen blanc (lus par la voix du téléphone)
+const AUDIOS=[
+ {text:"Hola, me llamo Lucía. Soy de Colombia, pero vivo en Madrid. Estudio Economía en la universidad y hablo español, inglés y un poco de francés. Tengo veinte años y tengo dos hermanos. Me gusta bailar y viajar.",
+  qs:[["¿De dónde es Lucía?","De Colombia",["De España","De México","De Argentina"],"Soy de Colombia, pero vivo en Madrid."],
+      ["¿Dónde vive Lucía?","En Madrid",["En Bogotá","En París","En Barcelona"],"Vive en Madrid."],
+      ["¿Qué estudia?","Economía",["Arquitectura","Medicina","Español"],"Estudio Economía."],
+      ["¿Cuántos hermanos tiene?","Dos",["Uno","Tres","Ninguno"],"Tengo dos hermanos."],
+      ["¿Qué le gusta?","Bailar y viajar",["Leer y nadar","Cantar y comer","Ver películas"],"Me gusta bailar y viajar."]]},
+ {text:"Buenos días. ¿Cómo se llama usted? Me llamo Pablo Ruiz. ¿De dónde es? Soy de México, de Guadalajara. ¿A qué se dedica? Soy profesor de español. ¿Cuál es su teléfono? Es el seis, uno, dos, tres, cuatro, cinco, seis, siete, ocho.",
+  qs:[["¿Cómo se llama el hombre?","Pablo Ruiz",["Pablo García","Pedro Ruiz","Pablo Pérez"],"Me llamo Pablo Ruiz."],
+      ["¿De dónde es?","De México",["De España","De Chile","De Argentina"],"Soy de México, de Guadalajara."],
+      ["¿Cuál es su profesión?","Profesor",["Actor","Escritor","Cantante"],"Soy profesor de español."],
+      ["¿Cuál es su teléfono?","612345678",["612345687","621345678","612354678"],"Seis, uno, dos, tres, cuatro, cinco, seis, siete, ocho."]]},
+ {text:"Mi familia es muy simpática. Mi madre se llama Carmen y es actriz. Mi padre se llama Juan y es escritor. Tengo una hermana, Marta, y un hermano, Luis. Mi hermana tiene treinta y cinco años. Vivimos en Barcelona.",
+  qs:[["¿Cuál es la profesión de la madre?","Actriz",["Escritora","Profesora","Cantante"],"Mi madre es actriz."],
+      ["¿Cuál es la profesión del padre?","Escritor",["Actor","Director","Futbolista"],"Mi padre es escritor."],
+      ["¿Cuántos años tiene la hermana?","Treinta y cinco",["Treinta y cuatro","Cuarenta y cinco","Veinticinco"],"Treinta y cinco = 35."],
+      ["¿Dónde vive la familia?","En Barcelona",["En Madrid","En París","En México"],"Vivimos en Barcelona."]]}
+];
+// Expression écrite de l'examen blanc : consigne, points vérifiés (étiquette, regex), minimum, modèle
+const WRITES=[
+ {prompt:"Preséntate en 5 o 6 frases : tu nombre, de dónde eres, dónde vives, qué estudias, qué idiomas hablas y qué te gusta.",
+  checks:[["Tu nombre (me llamo…)","me llamo"],["Tu origen (soy de…)","soy de|soy (franc|españ)"],["Dónde vives (vivo en…)","vivo en"],["Tus estudios (estudio…)","estudio|soy estudiante"],["Tus idiomas (hablo…)","hablo"],["Tus gustos (me gusta…)","me gusta|me gustaría"]],min:4,
+  modelo:"Me llamo Ana. Soy de Francia y vivo en París. Estudio Economía y hablo francés, inglés y un poco de español. Me gusta la música y me gustaría visitar México."},
+ {prompt:"Presenta a tu mejor amigo o amiga en 5 o 6 frases : cómo se llama, de dónde es, dónde vive, qué estudia, cuántos años tiene y qué le gusta.",
+  checks:[["Cómo se llama (se llama…)","se llama"],["De dónde es (es de…)","es de|es (franc|españ|mexic)"],["Dónde vive (vive en…)","vive en"],["Qué estudia (estudia…)","estudia|es estudiante"],["Su edad (tiene … años)","tiene .* años"],["Sus gustos (le gusta…)","le gusta"]],min:4,
+  modelo:"Mi mejor amigo se llama Pablo. Es de Lyon y vive en París. Estudia Economía y tiene veinte años. Le gusta bailar y le gusta el fútbol."}
+];
+
 
 /* ===================== OUTILS ===================== */
 const $=s=>document.querySelector(s);
@@ -253,7 +458,7 @@ function say(t){if(!canSpeak)return;try{const u=new SpeechSynthesisUtterance(Str
 function uniqOpts(answer,others,n=4){const set=[answer];for(const o of others){if(set.length>=n)break;if(!set.includes(o))set.push(o);}return shuffle(set);}
 
 /* Sauvegarde */
-const DEF={xp:0,streak:{n:0,last:''},daily:{d:'',xp:0},stars:{},items:{},sound:true};
+const DEF={exam:0,xp:0,streak:{n:0,last:''},daily:{d:'',xp:0},stars:{},items:{},sound:true};
 let store;try{store=Object.assign({},DEF,JSON.parse(localStorage.getItem('esp-cero2')||'{}'));}catch(e){store=Object.assign({},DEF);}
 const save=()=>{try{localStorage.setItem('esp-cero2',JSON.stringify(store));}catch(e){}};
 const dstr=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -279,7 +484,10 @@ function tilde(mood='happy',size=64){
     wow:'<ellipse cx="60" cy="82" rx="9" ry="11" fill="#2a1a5e"/>'}[mood];
   return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" aria-hidden="true"><path d="M32 19q14-18 28 0t28 0" fill="none" stroke="#ffb703" stroke-width="8" stroke-linecap="round"/><g transform="translate(0 6)"><circle cx="60" cy="68" r="44" fill="#6c3df0"/><ellipse cx="60" cy="84" rx="30" ry="20" fill="#8f6bff" opacity=".55"/><circle cx="43" cy="60" r="11" fill="#fff"/><circle cx="77" cy="60" r="11" fill="#fff"/><circle cx="45" cy="62" r="5.5" fill="#2a1a5e"/><circle cx="79" cy="62" r="5.5" fill="#2a1a5e"/><circle cx="31" cy="76" r="6" fill="#ff8fab" opacity=".7"/><circle cx="89" cy="76" r="6" fill="#ff8fab" opacity=".7"/>${mouth}</g></svg>`;
 }
-const ICON={path:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8 17c6 0 2-10 8-10"/></svg>',
+const ICON={exam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h10l4 4v14H5z"/><path d="M8 12l2 2 4-4M8 18h8"/></svg>',
+ mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+ read:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M8 9h8M8 13h8M8 17h4"/></svg>',
+ path:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8 17c6 0 2-10 8-10"/></svg>',
  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>',
  me:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 15-5 16 0"/></svg>',
  loop:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 3v5h-5"/></svg>'};
@@ -357,15 +565,58 @@ function reviewLesson(){
   for(let n=0;n<=100;n++)cand.push({k:'n:'+n,w:n>30?.5:1,make:()=>numStep(n,rnd(canSpeak?['d2w','w2d','type_w','type_d','listen']:['d2w','w2d','type_w','type_d']))});
   Object.keys(V).forEach(k=>[0,1,2,3,4,5].forEach(i=>cand.push({k:'v:'+k+':'+i,make:()=>verbStep(k,i,rnd(['choice','type','cloze']))})));
   PH.forEach((p,i)=>cand.push({k:'p:'+i,make:()=>phraseStep(i,rnd(['tiles','choice']))}));
+  Object.keys(CL).forEach(k=>CL[k].items.forEach((it,i)=>cand.push({k:'c:'+k+':'+i,w:.5,make:()=>qStep(it,'c:'+k+':'+i,{sub:CL[k].sub})})));
   const out=[];let pool=cand.slice();
   while(out.length<12&&pool.length){const wts=pool.map(c=>weightOf(c.k)*(c.w||1));const tot=wts.reduce((a,b)=>a+b,0);let r=Math.random()*tot,x=0;for(;x<pool.length;x++){r-=wts[x];if(r<=0)break;}out.push(pool.splice(Math.min(x,pool.length-1),1)[0].make());}
   return out;
 }
 
+/* ===================== NOUVEAUX GÉNÉRATEURS ===================== */
+function qStep(q,key,extra){return Object.assign({type:'choice',key,prompt:q[0],sub:'Choisis la bonne réponse',options:uniqOpts(q[1],shuffle(q[2])),answer:q[1],note:q[3],nospk:true,long:true},extra||{});}
+function bankLesson(k){const items=CL[k].items;return shuffle(items.map((it,i)=>qStep(it,'c:'+k+':'+i,{sub:CL[k].sub}))).slice(0,10);}
+function alphaLesson(){
+  const A=shuffle(ALPHA),steps=[matchStep(A.slice(0,5).map(a=>[a[0].toUpperCase(),a[1],a[1]]))];
+  const others=a=>shuffle(ALPHA.filter(x=>x!==a));
+  A.slice(5,9).forEach(a=>steps.push({type:'choice',key:'a:'+a[0],prompt:a[0].toUpperCase(),sub:"Comment s'appelle cette lettre ?",options:uniqOpts(a[1],others(a).map(x=>x[1])),answer:a[1],say:a[1],nospk:true}));
+  if(canSpeak)A.slice(9,12).forEach(a=>steps.push({type:'choice',key:'a:'+a[0],listen:true,say:a[1],sub:'Écoute le nom et choisis la lettre',options:uniqOpts(a[0].toUpperCase(),others(a).map(x=>x[0].toUpperCase())),answer:a[0].toUpperCase()}));
+  A.slice(12,15).forEach(a=>steps.push({type:'type',key:'a:'+a[0],prompt:a[0].toUpperCase(),sub:'Écris le nom de cette lettre',answer:a[1],say:a[1],nospk:true}));
+  return steps;}
+function phoneLesson(){const steps=[];
+  for(let i=0;i<5;i++){let d='6';for(let k=0;k<8;k++)d+=Math.floor(Math.random()*10);const words=d.split('').map(x=>U[+x]).join(', ');
+    steps.push(canSpeak?{type:'type',numeric:true,listen:true,say:words,sub:'Écoute le numéro de téléphone et écris-le',answer:d}:{type:'type',numeric:true,prompt:words,sub:'Écris ce numéro en chiffres',answer:d,say:words,nospk:true});}
+  return steps;}
+const AV=ARTS.flatMap(a=>a.vocab);
+function artLesson(id){const a=ARTS.find(x=>x.id===id);return shuffle(a.qs.map((q,i)=>qStep(q,'q:'+id+':'+i,{sub:a.title}))).concat([matchStep(a.vocab.slice(0,5).map(v=>[v[0],v[1],v[0]]))]);}
+function vocMixLesson(){const all=[];ARTS.forEach(a=>a.qs.forEach((q,i)=>all.push(qStep(q,'q:'+a.id+':'+i,{sub:a.title}))));return shuffle(all).slice(0,12);}
+function vocWordsLesson(){const w=shuffle(AV),steps=[matchStep(w.slice(0,5).map(v=>[v[0],v[1],v[0]]))];
+  w.slice(5,13).forEach(v=>steps.push({type:'choice',key:'av:'+v[0],prompt:v[0],say:v[0],sub:'Que signifie cette expression ?',options:uniqOpts(v[1],shuffle(AV.filter(x=>x!==v)).map(x=>x[1])),answer:v[1]}));
+  return steps;}
+function examLesson(parts){
+  const steps=[];
+  if(parts.includes('oral')){const A=rnd(AUDIOS),au={text:A.text,left:2};
+    steps.push({type:'info',title:'Comprensión oral',audio:au,sub:'Écoute le document (2 écoutes maximum), puis réponds aux questions.'});
+    A.qs.forEach(q=>steps.push(qStep(q,null,{sub:'Compréhension orale',replay:au})));}
+  if(parts.includes('gram')){
+    const pool=[];Object.keys(CL).forEach(k=>CL[k].items.forEach(it=>pool.push(qStep(it,null,{sub:'Grammaire : '+CL[k].sub}))));
+    shuffle(pool).slice(0,8).forEach(s=>steps.push(s));
+    shuffle(Object.keys(V).slice(0,9)).slice(0,3).forEach(k=>steps.push(verbStep(k,Math.floor(Math.random()*6),'cloze')));
+    steps.push(numStep(30+Math.floor(Math.random()*70),'w2d'));steps.push(numStep(Math.floor(Math.random()*30),'type_w'));}
+  if(parts.includes('escr')){const w=rnd(WRITES);
+    steps.push({type:'info',title:'Expresión escrita',html:'<p>Écris un petit texte en espagnol (5 ou 6 phrases). Pas de panique : on vérifie les points demandés et on te montre un modèle.</p>'});
+    steps.push({type:'write',key:null,sub:'Expression écrite',prompt:w.prompt,checks:w.checks,min:w.min,modelo:w.modelo});}
+  return steps;}
+const XDEF={
+ xfull:{id:'exam-full',title:'Examen blanc EXE 2',exam:true,full:true,build:()=>examLesson(['oral','gram','escr'])},
+ xoral:{id:'exam-oral',title:'Compréhension orale',exam:true,build:()=>examLesson(['oral'])},
+ xgram:{id:'exam-gram',title:'Grammaire et vocabulaire',exam:true,build:()=>examLesson(['gram'])},
+ xescr:{id:'exam-escr',title:'Expression écrite',exam:true,build:()=>examLesson(['escr'])}};
+
+
 const UNITS=[
  {id:'u0',cls:'u0',sub:'Unidad 0',title:'Palabras',lessons:[
   {id:'saludos',title:'Saludos',build:()=>vocabLesson(catWords('Saludos'))},
   {id:'colores',title:'Colores',build:()=>vocabLesson(catWords('Colores'))},
+  {id:'alfabeto',title:'El alfabeto',build:alphaLesson},
   {id:'dias',title:'Días',build:()=>vocabLesson(catWords('Días'))},
   {id:'num10',title:'Números 0-10',build:()=>numLesson(0,10)},
   {id:'num30',title:'Números 11-30',build:()=>numLesson(11,30)}]},
@@ -378,12 +629,18 @@ const UNITS=[
   {id:'preguntas',title:'Preguntas',build:()=>vocabLesson(catWords('Preguntas'),PH.map((p,i)=>i).filter(i=>PH[i][2]==='preg'))},
   {id:'present',title:'Presentarse',build:()=>phraseLesson('pres')},
   {id:'quien',title:'¿Quién es?',build:()=>phraseLesson('preg')},
-  {id:'num100',title:'Números 31-100',build:()=>numLesson(31,100)}]},
+  {id:'num100',title:'Números 31-100',build:()=>numLesson(31,100)},
+  {id:'articulos',title:'Los artículos',build:()=>bankLesson('art')},
+  {id:'genero',title:'Género y número',build:()=>bankLesson('gen')},
+  {id:'tuusted',title:'Tú, usted, vosotros',build:()=>bankLesson('tu')},
+  {id:'telefono',title:'Teléfonos',build:phoneLesson}]},
  {id:'u2',cls:'u2',sub:'Unidad 2',title:'Planes',lessons:[
   {id:'familia',title:'La familia',build:()=>vocabLesson(catWords('Familia'))},
   {id:'tiempo',title:'Tiempo libre',build:()=>vocabLesson(catWords('Tiempo libre'))},
   {id:'querer',title:'Querer y entender',build:()=>verbLesson(['querer','entender'])},
   {id:'saber',title:'Saber, conocer, hacer',build:()=>verbLesson(['saber','conocer','hacer'])},
+  {id:'posesivos',title:'Mi, tu, su',build:()=>bankLesson('pos')},
+  {id:'conectores',title:'Muy, porque, para',build:()=>bankLesson('grad')},
   {id:'gustar',title:'Gustar y palabras útiles',build:()=>vocabLesson(catWords('Palabras útiles')).concat(verbLesson(['gustar']).slice(0,3))}]}
 ];
 const ALL=UNITS.flatMap(u=>u.lessons.map(l=>Object.assign({unit:u},l)));
@@ -391,12 +648,12 @@ const ALL=UNITS.flatMap(u=>u.lessons.map(l=>Object.assign({unit:u},l)));
 /* ===================== ÉCRANS PRINCIPAUX ===================== */
 let tab='path',gsub='verbos',gverb='ser',gcat=CATS[0],L=null;
 function setNav(show){nav.hidden=!show;if(!show)return;
-  const t=[['path','Ruta','path'],['guide','Guía','book'],['me','Yo','me']];
+  const t=[['path','Ruta','path'],['guide','Guía','book'],['exam','Examen','exam'],['oral','Oral','mic'],['read','Lectura','read'],['me','Yo','me']];
   nav.innerHTML=t.map(x=>`<button class="tab" role="tab" data-tab="${x[0]}" aria-selected="${tab===x[0]}">${ICON[x[2]]}<span>${x[1]}</span></button>`).join('');
   nav.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;main();});}
 function hud(){const g=todayXp();return`<header class="hud"><div class="stat flame" title="Jours d'affilée">${FLAME}<b>${streak()}</b></div><div class="stat xp" title="XP total">${BOLT}<b>${store.xp}</b></div><div class="goal"><span>Objectif du jour : ${Math.min(g,GOAL)}/${GOAL} XP</span><div class="bar"><i style="width:${Math.min(100,g/GOAL*100)}%"></i></div></div></header>`;}
-function main(){L=null;setNav(true);window.scrollTo(0,0);
-  if(tab==='path')app.innerHTML=hud()+homeHTML();else if(tab==='guide')app.innerHTML=hud()+guideHTML();else app.innerHTML=hud()+meHTML();
+function main(){L=null;clearInterval(tmr);setNav(true);window.scrollTo(0,0);
+  if(tab==='path')app.innerHTML=hud()+homeHTML();else if(tab==='guide')app.innerHTML=hud()+guideHTML();else if(tab==='exam')app.innerHTML=hud()+examHTML();else if(tab==='oral')app.innerHTML=hud()+oralHTML();else if(tab==='read')app.innerHTML=hud()+readHTML();else app.innerHTML=hud()+meHTML();
   bindMain();}
 function nextLesson(){return ALL.find(l=>!store.stars[l.id]);}
 function homeHTML(){
@@ -411,6 +668,25 @@ function homeHTML(){
   return h+'</div>';}
 function bindMain(){
   document.querySelectorAll('[data-lesson]').forEach(b=>b.onclick=()=>{const l=ALL.find(x=>x.id===b.dataset.lesson);startLesson(l);});
+  document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>startLesson(XDEF[b.dataset.x]));
+  document.querySelectorAll('[data-osub]').forEach(b=>b.onclick=()=>{osub=b.dataset.osub;main();});
+  document.querySelectorAll('[data-art]').forEach(b=>b.onclick=()=>{art=b.dataset.art;main();});
+  document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{art=null;main();});
+  document.querySelectorAll('[data-artq]').forEach(b=>b.onclick=()=>{const a=ARTS.find(x=>x.id===b.dataset.artq);startLesson({id:'vb:'+a.id,title:a.title,build:()=>artLesson(a.id)});});
+  const vm=$('#vmix');if(vm)vm.onclick=()=>startLesson({id:'vb-mix',title:'QCM Vocable',build:vocMixLesson});
+  const vw=$('#vwords');if(vw)vw.onclick=()=>startLesson({id:'vb-words',title:'Vocabulaire Vocable',build:vocWordsLesson});
+  const sp=$('#spin');if(sp)sp.onclick=()=>{rul={sit:rnd(SIT.filter(x=>x!==rul.sit)),ph:'idle',end:0};main();};
+  document.querySelectorAll('[data-sit]').forEach(b=>b.onclick=()=>{rul={sit:SIT[+b.dataset.sit],ph:'idle',end:0};main();});
+  const pg=$('#prepgo');if(pg)pg.onclick=()=>{rul.ph='prep';rul.end=Date.now()+120000;main();};
+  const tg=$('#talkgo');if(tg)tg.onclick=()=>{rul.ph='talk';rul.end=Date.now()+300000;main();};
+  const dg=$('#donego');if(dg)dg.onclick=()=>{rul.ph='done';main();};
+  const tm=$('#tm');if(tm){const upd=()=>{const left=Math.max(0,Math.ceil((rul.end-Date.now())/1000));tm.textContent=fmt(left);if(left<=0){clearInterval(tmr);beep([880,880,880],.2);rul.ph=rul.ph==='prep'?'talk':'done';if(rul.ph==='talk')rul.end=Date.now()+300000;main();}};upd();tmr=setInterval(upd,250);}
+  const gs=$('#gstart');if(gs)gs.onclick=()=>{game={p:rnd(FAM),log:[],guess:false,over:false,bad:[],tries:0};main();};
+  const ga=$('#gagain');if(ga)ga.onclick=()=>{game=null;main();};
+  const gg=$('#gguess');if(gg)gg.onclick=()=>{game.guess=true;main();};
+  const gb=$('#gback');if(gb)gb.onclick=()=>{game.guess=false;main();};
+  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{game.log.push({code:b.dataset.q,q:b.dataset.qt,a:ans(game.p,b.dataset.q)});main();});
+  document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{game.tries++;if(b.dataset.g===game.p.n){game.over=true;beep([523,659,784,1046],.12);confetti();}else{game.bad.push(b.dataset.g);beep([240,180],.16);}main();});
   const r=$('#review');if(r)r.onclick=()=>startLesson({id:'review',title:'Repaso',build:reviewLesson});
   document.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{gsub=b.dataset.sub;main();});
   document.querySelectorAll('[data-verb]').forEach(b=>b.onclick=()=>{gverb=b.dataset.verb;main();});
@@ -425,7 +701,7 @@ function meHTML(){
   const done=ALL.filter(l=>store.stars[l.id]).length,stars=Object.values(store.stars).reduce((a,b)=>a+b,0);
   const mast=Object.values(store.items).filter(s=>s.ok>=2&&s.ok>s.ko).length;
   return`<div class="pad stack"><div class="card hero">${tilde('wow',64)}<div><h2>Tu progreso</h2><p>Chaque série compte.</p></div></div>
-  <div class="kpis"><div class="kpi"><b>${store.xp}</b><span>XP total</span></div><div class="kpi"><b>${streak()}</b><span>jours d'affilée</span></div><div class="kpi"><b>${done}/${ALL.length}</b><span>leçons terminées</span></div><div class="kpi"><b>${mast}</b><span>mots et formes maîtrisés</span></div></div>
+  <div class="kpis"><div class="kpi"><b>${store.xp}</b><span>XP total</span></div><div class="kpi"><b>${streak()}</b><span>jours d'affilée</span></div><div class="kpi"><b>${done}/${ALL.length}</b><span>leçons terminées</span></div><div class="kpi"><b>${mast}</b><span>mots et formes maîtrisés</span></div><div class="kpi"><b>${store.exam?store.exam+'/20':'-'}</b><span>meilleur examen blanc</span></div></div>
   <div class="card stack"><h3>Réglages</h3><button class="btn ghost" id="snd">Sons : ${store.sound?'activés':'coupés'}</button>
    <button class="btn ghost" id="reset">Réinitialiser ma progression</button>
    <div id="rsure" hidden class="stack"><p style="margin:0">Tout effacer (XP, série, étoiles) ? Impossible de revenir en arrière.</p><button class="btn ko" id="ryes">Oui, tout effacer</button><button class="btn ghost" id="rno">Non, garder</button></div></div></div>`;
@@ -433,9 +709,9 @@ function meHTML(){
 
 /* Guía (fiches de révision) */
 function guideHTML(){
-  const subs=[['verbos','Verbos'],['numeros','Números'],['vocab','Vocabulario'],['oral','Oral']];
+  const subs=[['verbos','Verbos'],['numeros','Números'],['vocab','Vocabulario'],['gram','Gramática'],['oral','Oral']];
   let h=`<div class="pad stack"><div class="chips">${subs.map(s=>`<button class="chip" data-sub="${s[0]}" aria-pressed="${gsub===s[0]}">${s[1]}</button>`).join('')}</div>`;
-  if(gsub==='verbos')h+=gVerbs();else if(gsub==='numeros')h+=gNums();else if(gsub==='vocab')h+=gVocab();else h+=gOral();
+  if(gsub==='verbos')h+=gVerbs();else if(gsub==='numeros')h+=gNums();else if(gsub==='vocab')h+=gVocab();else if(gsub==='gram')h+=gGram();else h+=gOral();
   return h+'</div>';}
 function gVerbs(){const v=V[gverb];
   return`<div class="chips">${Object.keys(V).map(k=>`<button class="chip" data-verb="${k}" aria-pressed="${gverb===k}">${k}</button>`).join('')}</div>
@@ -454,11 +730,87 @@ function gVocab(){return`<div class="chips">${CATS.map(c=>`<button class="chip" 
 function gOral(){const rows=g=>PH.filter(p=>p[2]===g).map(r=>`<button class="row" data-say="${esc(r[0])}"><span class="es">${esc(r[0])}</span><span class="fr">${esc(r[1])}</span>${canSpeak?SPK:''}</button>`).join('');
   return`<div class="card stack"><h3>Se présenter</h3><div>${rows('pres')}</div></div><div class="card stack"><h3>Deviner un personnage</h3><div>${rows('preg')}</div><div class="muted">On parle <b>de</b> la personne : 3e personne (es, tiene, vive, habla), pas « tú ».</div></div>`;}
 
+/* ===================== NOUVEAUX ÉCRANS ===================== */
+let rul={sit:null,ph:'idle',end:0},tmr=null,game=null,art=null,osub='ruleta';
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const RPH=[['Para empezar…','Pour commencer…'],['Además…','En plus…'],['También…','Aussi…'],['Pero…','Mais…'],['Porque…','Parce que…'],['Perdón, no sé decir…','Pardon, je ne sais pas dire…'],['¿Puede repetir, por favor?','Pouvez-vous répéter ?']];
+function daysTo(y,m,d){return Math.ceil((new Date(y,m,d)-new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()))/864e5);}
+function rowsPh(list){return list.map(r=>`<button class="row" data-say="${esc(r[0])}"><span class="es">${esc(r[0])}</span><span class="fr">${esc(r[1])}</span>${canSpeak?SPK:''}</button>`).join('');}
+
+function examHTML(){
+  const d=daysTo(2026,10,30);
+  return`<div class="pad stack"><div class="card hero">${tilde('wow',64)}<div><h2>Examen blanc</h2><p>${d>0?`EXE 2 dans ${d} jour${d>1?'s':''} (30/11)`:d===0?'EXE 2 : c\'est aujourd\'hui !':'Entraîne-toi comme en vrai.'}</p></div></div>
+  <div class="card stack"><h3>Examen complet · 15 min</h3><div class="muted">Compréhension orale (audio écouté 2 fois) + QCM grammaire et vocabulaire + expression écrite courte. Pas de seconde chance : tu vois ta note estimée sur 20 et tes erreurs à la fin.</div><button class="btn" data-x="xfull">Lancer l'examen</button></div>
+  <div class="card stack"><h3>Une partie à la fois</h3>
+   <button class="btn ghost" data-x="xoral">Compréhension orale · 5 q.</button>
+   <button class="btn ghost" data-x="xgram">Grammaire et vocabulaire · 13 q.</button>
+   <button class="btn ghost" data-x="xescr">Expression écrite · 1 texte</button></div>
+  <div class="card stack"><h3>Format réel de l'EXE 2 (30/11)</h3><div class="note">Écoute (audio passé 2 fois) + QCM = 50 %<br>Grammaire QCM + courte expression écrite = 50 %<br>30 minutes. Avant : les 3 modules « Marisol en París » (Articulate) à faire sur ordinateur.</div></div></div>`;}
+
+function oralHTML(){
+  let h=`<div class="pad stack"><div class="chips"><button class="chip" data-osub="ruleta" aria-pressed="${osub==='ruleta'}">Ruleta de la suerte</button><button class="chip" data-osub="quien" aria-pressed="${osub==='quien'}">¿Quién es?</button></div>`;
+  return h+(osub==='ruleta'?ruletaHTML():quienHTML())+'</div>';}
+function ruletaHTML(){
+  const d=daysTo(2026,10,23);const s=rul.sit;
+  if(!s){
+    return`<div class="card hero">${tilde('happy',64)}<div><h2>Ruleta de la suerte</h2><p>${d>0?`Oral Zoom dans ${d} jour${d>1?'s':''} (23/11)`:'Entraîne ton oral improvisé.'}</p></div></div>
+    <div class="note">Le jour J : un sujet tiré au sort, 2 min de préparation, puis 4 à 5 min à l'oral. Ici : même chose, en solo.</div>
+    <button class="btn" id="spin">Girar la ruleta</button>
+    <div class="card stack"><h3>Ou choisis un sujet</h3><div>${SIT.map((x,i)=>`<button class="row" data-sit="${i}"><span class="es">${esc(x.t)}</span></button>`).join('')}</div></div>
+    <div class="card stack"><h3>Phrases de secours</h3><div>${rowsPh(RPH)}</div></div>`;}
+  let ctl='';
+  if(rul.ph==='idle')ctl=`<button class="btn" id="prepgo">Préparer (2 min)</button>`;
+  else if(rul.ph==='prep')ctl=`<div class="timer" id="tm">02:00</div><div class="muted" style="text-align:center">Prépare quelques idées, pas un texte entier.</div><button class="btn" id="talkgo">Je suis prêt, je parle</button>`;
+  else if(rul.ph==='talk')ctl=`<div class="timer" id="tm">05:00</div><div class="muted" style="text-align:center">Parle à voix haute, sans t'arrêter. Tu bloques ? Utilise une phrase de secours ci-dessous.</div><button class="btn" id="donego">J'ai terminé</button>`;
+  else ctl=`<div class="note"><b>Modèle</b><br>${esc(s.modelo)}</div>${canSpeak?`<button class="btn ghost" data-say="${esc(s.modelo)}">Écouter le modèle</button>`:''}<div class="muted">Compare : as-tu utilisé 3 ou 4 phrases du modèle ? Recommence avec un autre sujet.</div>`;
+  return`<div class="card stack"><div class="muted">${esc(s.fr)}</div><h2>${esc(s.t)}</h2>${ctl}</div>
+  <div class="card stack"><h3>Phrases utiles pour ce sujet</h3><div>${rowsPh(s.ph)}</div></div>
+  <div class="card stack"><h3>Phrases de secours</h3><div>${rowsPh(RPH)}</div></div>
+  <button class="btn ghost" id="spin">Autre sujet</button>`;}
+function ans(p,code){
+  if(code==='g')return p.g==='m'?'Es un hombre.':'Es una mujer.';
+  if(code==='es')return p.c==='España'?'Sí, es español / española.':'No, no es de España.';
+  if(code==='o')return p.o?'Sí, tiene más de 40 años.':'No, tiene menos de 40 años.';
+  const i=code.indexOf(':'),k=code.slice(0,i),v=code.slice(i+1);
+  if(k==='c')return p.c===v?`Sí, es de ${v}.`:`No, no es de ${v}.`;
+  if(k==='r')return p.r===v?`Sí, vive en ${v}.`:`No, no vive en ${v}.`;
+  return p.j===v?`Sí, es ${v==='actor'?'actor / actriz':v}.`:'No.';}
+function quienHTML(){
+  if(!game)return`<div class="card hero">${tilde('happy',64)}<div><h2>¿Quién es?</h2><p>Je pense à un personnage célèbre. Devine-le en posant des questions.</p></div></div>
+  <div class="note">Parfait pour l'oral : tu t'entraînes à poser des questions à la 3e personne (¿Es…? ¿Vive…? ¿Tiene…?).</div><button class="btn" id="gstart">Jugar</button>
+  <div class="card stack"><h3>Les questions à connaître</h3><div>${rowsPh(PH.filter(p=>p[2]==='preg'))}</div></div>`;
+  const asked=game.log.map(x=>x.code);
+  let h=`<div class="card stack"><h3>Je pense à un famoso / una famosa</h3><div class="muted">${game.log.length} question${game.log.length>1?'s':''} posée${game.log.length>1?'s':''}</div>
+  ${game.log.map(x=>`<div class="qa"><b>${esc(x.q)}</b><span>${esc(x.a)}</span></div>`).join('')||'<div class="muted">Choisis une question ci-dessous.</div>'}</div>`;
+  if(game.over)return h+`<div class="card stack" style="text-align:center">${tilde('happy',80)}<h2>¡Correcto!</h2><div>C'était <b>${esc(game.p.n)}</b>, trouvé en ${game.log.length} question${game.log.length>1?'s':''} et ${game.tries} essai${game.tries>1?'s':''}.</div><button class="btn" id="gagain">Rejouer</button></div>`;
+  if(game.guess)return h+`<div class="card stack"><h3>Qui est-ce ?</h3><div class="opts">${FAM.filter(f=>!game.bad.includes(f.n)).map(f=>`<button class="opt" data-g="${esc(f.n)}">${esc(f.n)}</button>`).join('')}</div><button class="btn ghost" id="gback">Retour aux questions</button></div>`;
+  h+=QGROUPS.map(g=>`<div class="card stack"><h3>${g[0]}</h3><div class="opts">${g[1].map(q=>`<button class="opt" data-q="${esc(q[1])}" data-qt="${esc(q[0])}" ${asked.includes(q[1])?'disabled':''}>${esc(q[0])}</button>`).join('')}</div></div>`).join('');
+  return h+`<button class="btn" id="gguess">Je devine</button>`;}
+
+function readHTML(){
+  if(art){const a=ARTS.find(x=>x.id===art);
+    return`<div class="pad stack"><button class="chip" data-back="1" aria-pressed="false">← Tous les textes</button>
+    <div class="card stack"><div class="muted">${esc(a.tema)}</div><h2>${esc(a.title)}</h2><div>${esc(a.resumen)}</div>${canSpeak?`<button class="say" data-say="${esc(a.resumen)}">${SPK}Escuchar</button>`:''}</div>
+    <div class="card stack"><h3>Ce qu'il faut retenir</h3><ul style="margin:0;padding-left:20px">${a.datos.map(d=>`<li>${esc(d)}</li>`).join('')}</ul></div>
+    <div class="card stack"><h3>Vocabulaire</h3><div>${rowsPh(a.vocab)}</div></div>
+    <button class="btn" data-artq="${a.id}">Quiz de ce texte</button></div>`;}
+  return`<div class="pad stack"><div class="card hero">${tilde('wow',64)}<div><h2>Vocable</h2><p>9 textes du cahier : lis, retiens, teste-toi.</p></div></div>
+  <button class="btn" id="vmix">QCM mélangé · 12 questions</button><button class="btn ghost" id="vwords">Vocabulaire des textes</button>
+  ${ARTS.map(a=>{const s=store.stars['vb:'+a.id]||0;return`<div class="card stack"><div class="top"><div><div class="muted">${esc(a.tema)}</div><h3>${esc(a.title)}</h3></div><span class="stars" style="display:flex">${s?[1,2,3].map(k=>star(k<=s)).join(''):''}</span></div><div style="display:flex;gap:10px"><button class="btn ghost" data-art="${a.id}" style="flex:1">Lire</button><button class="btn" data-artq="${a.id}" style="flex:1">Quiz</button></div></div>`;}).join('')}
+  <div class="note">Les résumés sont écrits pour t'entraîner. Relis aussi les vrais textes du cahier.</div></div>`;}
+
+function gGram(){return`<div class="card stack"><h3>Les articles</h3><table class="tbl"><thead><tr><th></th><th>défini</th><th>indéfini</th></tr></thead><tbody><tr><td class="pron">masc. sing.</td><td class="form">el</td><td class="form">un</td></tr><tr><td class="pron">fém. sing.</td><td class="form">la</td><td class="form">una</td></tr><tr><td class="pron">masc. plur.</td><td class="form">los</td><td class="form">unos</td></tr><tr><td class="pron">fém. plur.</td><td class="form">las</td><td class="form">unas</td></tr></tbody></table><div class="note">Noms en -o : souvent masculin. Noms en -a, -dad, -ción : souvent féminin.</div></div>
+  <div class="card stack"><h3>Accorder l'adjectif</h3><div class="note">Masculin → féminin : -o → <b>-a</b> (famoso → famosa). Pluriel : + <b>-s</b> (famosos). Nationalités en consonne : español → españ<b>ola</b>, francés → franc<b>esa</b>. Mots en -e, -ista : même forme (cantante, futbolista).</div></div>
+  <div class="card stack"><h3>Les possessifs</h3><table class="tbl"><tbody><tr><td class="pron">mon / ma / mes</td><td class="form">mi / mis</td></tr><tr><td class="pron">ton / ta / tes</td><td class="form">tu / tus</td></tr><tr><td class="pron">son / sa / ses</td><td class="form">su / sus</td></tr><tr><td class="pron">notre</td><td class="form">nuestro / a</td></tr></tbody></table><div class="muted">Le possessif s'accorde avec <b>l'objet possédé</b>, pas avec le possesseur.</div></div>
+  <div class="card stack"><h3>Petits mots utiles</h3><div class="note"><b>muy</b> très · <b>bastante</b> assez · <b>un poco</b> un peu · <b>también</b> aussi<br><b>porque</b> parce que (cause) · <b>para</b> + infinitif = pour (but)</div></div>
+  <div class="card stack"><h3>Alphabet</h3><div class="grid">${ALPHA.map(a=>`<button class="cell" data-say="${a[1]}"><b>${a[0].toUpperCase()}</b><span>${a[1]}</span></button>`).join('')}</div></div>`;}
+
 /* ===================== MOTEUR DE LEÇON ===================== */
 function startLesson(def){
   let steps;try{steps=def.build();}catch(e){steps=[];}
   steps=steps.filter(Boolean);if(!steps.length)return;
-  L={def,q:steps.slice(),n0:steps.length,total:steps.length,done:0,first:0,xp:0,combo:0,res:null};
+  const cnt=steps.filter(x=>x.type!=='info').length;
+  L={def,q:steps.slice(),n0:cnt,total:cnt,done:0,first:0,xp:0,combo:0,res:null,wrong:[]};
   setNav(false);renderStep();
 }
 function quitDialog(){const d=document.createElement('div');d.className='sheet';d.innerHTML=`<div class="box">${tilde('sad',70)}<h2>¿Seguro que quieres salir ?</h2><p class="muted" style="margin:0">Tu progression de cette leçon sera perdue.</p><button class="btn" id="stay">Continuar</button><button class="btn ghost" id="leave">Salir</button></div>`;document.body.appendChild(d);
@@ -469,31 +821,38 @@ function renderStep(){
   const pct=Math.round(L.done/L.total*100);
   let body=`<div class="instr">${st.sub||''}</div>`;
   if(st.type==='choice'){
-    const q=st.listen?`<button class="spk big" id="spk" aria-label="Écouter">${SPK}</button>`:`<div class="qbox"><div class="qtext">${esc(st.prompt)}</div>${canSpeak&&st.say&&!st.nospk?`<button class="spk" id="spk" aria-label="Écouter">${SPK}</button>`:''}</div>`;
-    body+=q+`<div class="opts">${st.options.map(o=>`<button class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>`;
+    const q=st.listen?`<button class="spk big" id="spk" aria-label="Écouter">${SPK}</button>`:`<div class="qbox"><div class="qtext${st.long?' long':''}">${esc(st.prompt)}</div>${canSpeak&&st.say&&!st.nospk?`<button class="spk" id="spk" aria-label="Écouter">${SPK}</button>`:''}</div>`;
+    body+=q+(st.replay?`<button class="say" id="rep" style="align-self:flex-start">${SPK}<span id="repn"></span></button>`:'')+`<div class="opts">${st.options.map(o=>`<button class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>`;
   }else if(st.type==='type'){
-    const q=st.listen?`<button class="spk big" id="spk" aria-label="Écouter">${SPK}</button>`:`<div class="qbox"><div class="qtext">${esc(st.prompt)}</div>${canSpeak&&st.say&&!st.nospk?`<button class="spk" id="spk" aria-label="Écouter">${SPK}</button>`:''}</div>`;
+    const q=st.listen?`<button class="spk big" id="spk" aria-label="Écouter">${SPK}</button>`:`<div class="qbox"><div class="qtext${st.long?' long':''}">${esc(st.prompt)}</div>${canSpeak&&st.say&&!st.nospk?`<button class="spk" id="spk" aria-label="Écouter">${SPK}</button>`:''}</div>`;
     body+=q+`<input class="in" id="ans" type="text" inputmode="${st.numeric?'numeric':'text'}" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" aria-label="Ta réponse" placeholder="Écris ici">`;
     if(!st.numeric)body+=`<div class="keys">${['á','é','í','ó','ú','ñ','ü','¿','¡'].map(k=>`<button class="key" type="button" data-key="${k}">${k}</button>`).join('')}</div>`;
+  }else if(st.type==='info'){
+    body+=`<h2>${esc(st.title)}</h2>`+(st.audio?(canSpeak?`<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 0"><button class="spk big" id="aplay" aria-label="Écouter">${SPK}</button><div class="muted" id="aleft"></div></div>`:`<div class="card">${esc(st.audio.text)}</div>`):st.html||'');
+  }else if(st.type==='write'){
+    body+=`<div class="qbox"><div class="qtext long">${esc(st.prompt)}</div></div><textarea class="in" id="ans" autocomplete="off" autocapitalize="sentences" spellcheck="false" aria-label="Ton texte" placeholder="Écris ici"></textarea><div class="keys">${['á','é','í','ó','ú','ñ','ü','¿','¡'].map(k=>`<button class="key" type="button" data-key="${k}">${k}</button>`).join('')}</div>`;
   }else if(st.type==='tiles'){
     body+=`<div class="qbox"><div class="qtext" style="font-size:1.4rem">${esc(st.prompt)}</div></div><div class="aline" id="aline"></div><div class="bank" id="bank"></div>`;
   }else if(st.type==='match'){
     const R=shuffle(st.pairs.map((p,i)=>({t:p.r,i})));
     body+=`<div class="mgrid"><div class="mcol">${st.pairs.map((p,i)=>`<button class="mt" data-side="l" data-i="${i}">${esc(p.l)}</button>`).join('')}</div><div class="mcol">${R.map(o=>`<button class="mt" data-side="r" data-i="${o.i}">${esc(o.t)}</button>`).join('')}</div></div>`;
   }
-  app.innerHTML=`<div class="lesson"><div class="ltop"><button class="x" id="quit" aria-label="Quitter">×</button><div class="pbar"><i style="width:${pct}%"></i></div></div><main class="lbody">${body}</main><footer class="lfoot" id="foot" ${st.type==='match'?'hidden':''}>${st.type==='match'?'':'<button class="btn" id="check" disabled>Comprobar</button>'}</footer></div>`;
+  app.innerHTML=`<div class="lesson"><div class="ltop"><button class="x" id="quit" aria-label="Quitter">×</button><div class="pbar"><i style="width:${pct}%"></i></div></div><main class="lbody">${body}</main><footer class="lfoot" id="foot" ${st.type==='match'?'hidden':''}>${st.type==='match'?'':`<button class="btn" id="check" ${st.type==='info'&&!(st.audio&&canSpeak)?'':'disabled'}>${st.type==='info'?'Continuar':'Comprobar'}</button>`}</footer></div>`;
   window.scrollTo(0,0);
   $('#quit').onclick=quitDialog;
   const sp=$('#spk');if(sp)sp.onclick=()=>say(st.say);
-  if(st.listen&&canSpeak)setTimeout(()=>{if(L&&L.cur===st)say(st.say);},350);
+  if(st.listen&&canSpeak&&!st.replay)setTimeout(()=>{if(L&&L.cur===st)say(st.say);},350);
   if(st.type==='choice')document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(L.checked)return;L.sel=b.dataset.v;document.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===b));$('#check').disabled=false;});
-  if(st.type==='type'){const inp=$('#ans');inp.oninput=()=>{$('#check').disabled=!inp.value.trim();};
-    inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if(L.checked)nextStep();else if(inp.value.trim())check();}};
-    document.querySelectorAll('[data-key]').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>{if(L.checked)return;const s=inp.selectionStart??inp.value.length,e2=inp.selectionEnd??s;inp.value=inp.value.slice(0,s)+b.dataset.key+inp.value.slice(e2);inp.focus();inp.setSelectionRange(s+1,s+1);$('#check').disabled=false;};});
-    if(!st.listen||!canSpeak)inp.focus();}
+  if(st.type==='type'||st.type==='write'){const inp=$('#ans');inp.oninput=()=>{$('#check').disabled=st.type==='write'?inp.value.trim().length<15:!inp.value.trim();};
+    inp.onkeydown=e=>{if(e.key==='Enter'&&st.type==='type'){e.preventDefault();if(L.checked)nextStep();else if(inp.value.trim())check();}};
+    document.querySelectorAll('[data-key]').forEach(b=>{b.onmousedown=e=>e.preventDefault();b.onclick=()=>{if(L.checked)return;const s=inp.selectionStart??inp.value.length,e2=inp.selectionEnd??s;inp.value=inp.value.slice(0,s)+b.dataset.key+inp.value.slice(e2);inp.focus();inp.setSelectionRange(s+1,s+1);$('#check').disabled=st.type==='write'?inp.value.trim().length<15:false;};});
+    if((!st.listen||!canSpeak)&&st.type==='type')inp.focus();}
   if(st.type==='tiles')drawTiles();
   if(st.type==='match')bindMatch();
-  const ck=$('#check');if(ck)ck.onclick=check;
+  const ck=$('#check');if(ck)ck.onclick=st.type==='info'?()=>{L.res='ok';nextStep();}:check;
+  if(st.type==='info'&&st.audio&&canSpeak){const au=st.audio,upd=()=>{$('#aleft').textContent='Écoutes restantes : '+au.left;};upd();$('#aplay').onclick=()=>{if(au.left<=0)return;au.left--;say(au.text);upd();$('#check').disabled=false;};}
+  if(st.replay&&canSpeak){const au=st.replay,upd=()=>{$('#repn').textContent=' Réécouter ('+au.left+')';};upd();$('#rep').onclick=()=>{if(au.left<=0)return;au.left--;say(au.text);upd();};}
+  else if(st.replay&&$('#rep'))$('#rep').remove();
 }
 function drawTiles(){const st=L.cur;
   $('#aline').innerHTML=L.tiles.map((ix,n)=>`<button class="tile" data-un="${n}">${esc(st.words[ix])}</button>`).join('');
@@ -514,7 +873,7 @@ function bindMatch(){const st=L.cur;
     else{L.mistakes++;b.classList.add('bad');other.el.classList.add('bad');beep([200],.12);const a=b,c=other.el;setTimeout(()=>{a.classList.remove('bad');c.classList.remove('bad','sel');},380);L.msel=null;}
   });}
 function judge(st,val){
-  if(st.numeric)return String(parseInt(val,10))===st.answer?'ok':'ko';
+  if(st.numeric)return String(parseInt(String(val).replace(/\s/g,''),10))===st.answer?'ok':'ko';
   const acc=[st.answer,...(st.alt||[])];
   if(acc.some(x=>norm(x)===norm(val)))return'ok';
   if(acc.some(x=>fold(x)===fold(val)))return'acc';
@@ -523,6 +882,8 @@ function check(){
   if(L.checked)return;const st=L.cur;let res;
   if(st.type==='choice'){res=L.sel===st.answer?'ok':'ko';document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;b.classList.remove('sel');if(b.dataset.v===st.answer)b.classList.add('good');else if(b.dataset.v===L.sel)b.classList.add('bad');});}
   else if(st.type==='type'){const v=$('#ans').value;res=judge(st,v);$('#ans').readOnly=true;}
+  else if(st.type==='write'){const v=$('#ans').value.toLowerCase();$('#ans').readOnly=true;const hits=st.checks.map(c=>[c[0],new RegExp(c[1]).test(v)]);const n=hits.filter(h=>h[1]).length;
+    return feedback(n>=st.min?'ok':'ko',{write:true,n,tot:hits.length,html:hits.map(h=>(h[1]?'✓ ':'✗ ')+esc(h[0])).join('<br>')+'<br><i>Modèle : '+esc(st.modelo)+'</i>'});}
   else if(st.type==='tiles'){const got=L.tiles.map(ix=>st.words[ix]).join(' ');res=got===st.answer?'ok':'ko';}
   feedback(res,{});
 }
@@ -533,7 +894,9 @@ function feedback(res,opt){
   if(ok){L.combo++;if(!st.retry){L.first++;L.xp+=10;}else L.xp+=5;beep([660,880],.1);}else{L.combo=0;beep([240,180],.16);}
   if(st.key&&!st.retry){const s=store.items[st.key]||(store.items[st.key]={ok:0,ko:0});ok?s.ok++:s.ko++;}
   let title,sub='';
-  if(ok){title=rnd(PRAISE);if(res==='acc')sub=`Pense aux accents : <b>${esc(st.answer)}</b>`;else if(L.combo>=3)sub=`Racha de ${L.combo} !`;}
+  if(!ok&&!st.retry)L.wrong.push({q:st.prompt,a:st.answer||'voir le modèle'});
+  if(opt.write){title=ok?rnd(PRAISE):'A mejorar';sub=opt.n+'/'+opt.tot+' points attendus<br>'+opt.html;}
+  else if(ok){title=rnd(PRAISE);if(res==='acc')sub=`Pense aux accents : <b>${esc(st.answer)}</b>`;else if(L.combo>=3)sub=`Racha de ${L.combo} !`;}
   else{title='Respuesta correcta';sub=opt.match?'Quelques erreurs sur les paires. On y revient plus tard.':`<b>${esc(st.answer)}</b>${st.note?'<br>'+st.note:''}`;}
   const f=$('#foot');f.hidden=false;f.className='lfoot '+(ok?'ok':'ko');
   f.innerHTML=`<div class="fb">${tilde(ok?'happy':'sad',56)}<div><h3>${title}</h3><p>${sub}</p></div></div><button class="btn ${ok?'ok':'ko'}" id="next">Continuar</button>`;
@@ -541,8 +904,10 @@ function feedback(res,opt){
   if(ok&&st.say&&canSpeak&&st.type!=='match'&&!st.listen)setTimeout(()=>say(st.say),150);
 }
 function nextStep(){
-  const st=L.q.shift();L.done++;
-  if(L.res==='ko'&&!st.retry&&st.type!=='match'){L.q.push(Object.assign({},st,{retry:true}));L.total++;}
+  const st=L.q.shift();
+  if(st.type==='info'){renderStep();return;}
+  L.done++;
+  if(L.res==='ko'&&!st.retry&&st.type!=='match'&&st.type!=='write'&&!L.def.exam){L.q.push(Object.assign({},st,{retry:true}));L.total++;}
   renderStep();
 }
 function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
@@ -551,15 +916,17 @@ function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)re
 function finishLesson(){
   const acc=Math.round(L.first/L.n0*100);let stars=acc>=90?3:acc>=70?2:1;
   let bonus=0;if(L.first===L.n0)bonus=20;L.xp+=bonus;
-  const isReview=L.def.id==='review';
+  const isReview=L.def.id==='review'||L.def.exam;
+  if(L.def.full)store.exam=Math.max(store.exam||0,Math.round(L.first/L.n0*20));
   if(!isReview)store.stars[L.def.id]=Math.max(store.stars[L.def.id]||0,stars);
   store.xp+=L.xp;const d=dstr();if(store.daily.d!==d)store.daily={d,xp:0};store.daily.xp+=L.xp;
   let streakUp=false;if(store.streak.last!==d){store.streak.n=(store.streak.last===yest()?store.streak.n:0)+1;store.streak.last=d;streakUp=true;}
   save();beep([523,659,784,1046],.13);confetti();
   const xp=L.xp,title=L.def.title;
-  app.innerHTML=`<div class="end">${tilde('happy',130)}<h1>${acc>=90?'¡Increíble!':'¡Lección completada!'}</h1><div class="muted">${esc(title)}</div>
+  app.innerHTML=`<div class="end">${tilde('happy',130)}<h1>${L.def.exam?'¡Examen terminado!':acc>=90?'¡Increíble!':'¡Lección completada!'}</h1><div class="muted">${esc(title)}</div>
   ${isReview?'':`<div class="bigstars">${[1,2,3].map(k=>star(k<=stars)).join('')}</div>`}
   <div class="cards"><div class="mini" style="--c:var(--gold-d)"><small>XP</small><b>+${xp}</b></div><div class="mini" style="--c:var(--ok-d)"><small>Precisión</small><b>${acc} %</b></div><div class="mini" style="--c:var(--flame)"><small>Racha</small><b>${streak()}</b></div></div>
+  ${L.def.exam?`<div class="card" style="width:100%"><h2>Note estimée : ${Math.round(L.first/L.n0*20)}/20</h2>${L.wrong.length?'<div class="muted" style="margin:6px 0">À revoir :</div>'+L.wrong.map(w=>`<div class="wrong">${esc(w.q)}<br><b>${esc(w.a)}</b></div>`).join(''):'<div>Aucune erreur !</div>'}</div>`:''}
   ${bonus?'<div class="muted">+20 XP de bonus : sans faute !</div>':''}${streakUp?'<div class="muted">Un jour de plus dans ta série.</div>':''}
   <div style="width:100%;display:flex;flex-direction:column;gap:10px"><button class="btn" id="home">Continuar</button><button class="btn ghost" id="again">Refaire la leçon</button></div></div>`;
   const def=L.def;$('#home').onclick=main;$('#again').onclick=()=>startLesson(def);
