@@ -72,7 +72,7 @@ h1,h2,h3{margin:0;font-weight:900;line-height:1.15}
 .ubanner{background:var(--uc);border-bottom:5px solid var(--ud);color:#fff;border-radius:18px;padding:14px 16px}
 .ubanner small{display:block;opacity:.85;font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem}
 .ubanner h2{font-size:1.2rem}
-.u0{--uc:#6c3df0;--ud:#4b24c4}.u1{--uc:#0e9aa7;--ud:#0a717b}.u2{--uc:#e8590c;--ud:#ad4308}
+.u3{--uc:#2fb344;--ud:#1f8a31}.u0{--uc:#6c3df0;--ud:#4b24c4}.u1{--uc:#0e9aa7;--ud:#0a717b}.u2{--uc:#e8590c;--ud:#ad4308}
 .path{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 0 4px}
 .lnode{display:flex;flex-direction:column;align-items:center;gap:6px;transform:translateX(var(--x,0));background:none;border:0;padding:0;width:140px;position:relative}
 .disc{width:78px;height:78px;border-radius:50%;background:var(--uc);border-bottom:7px solid var(--ud);display:grid;place-items:center;color:#fff;transition:transform .08s,border-width .08s}
@@ -240,6 +240,18 @@ const W=[
  ['muy','très','Palabras útiles'],['bastante','assez','Palabras útiles'],['un poco','un peu','Palabras útiles'],['porque','parce que','Palabras útiles'],['para','pour (but)','Palabras útiles'],['también','aussi','Palabras útiles'],
  ['la casa','la maison','Palabras útiles'],['el libro','le livre','Palabras útiles'],['el amigo','l\'ami','Palabras útiles'],['la universidad','l\'université','Palabras útiles'],['la clase','le cours','Palabras útiles'],['la canción','la chanson','Palabras útiles'],['el verano','l\'été','Palabras útiles'],['la ciudad','la ville','Palabras útiles']
 ];
+
+V.leer={fr:'lire (-er)',f:['leo','lees','lee','leemos','leéis','leen'],note:'Régulier en <b>-er</b>. <i>leéis</i> garde son accent.'};
+V.ver={fr:'voir',f:['veo','ves','ve','vemos','veis','ven'],note:'<b>yo veo</b> est la seule forme irrégulière. <i>veis</i> n\'a pas d\'accent.'};
+V.aprender={fr:'apprendre (-er)',f:['aprendo','aprendes','aprende','aprendemos','aprendéis','aprenden'],note:'Régulier en <b>-er</b>.'};
+V.escribir={fr:'écrire (-ir)',f:['escribo','escribes','escribe','escribimos','escribís','escriben'],note:'Régulier en <b>-ir</b>.'};
+CLOZE.leer=[['Yo ___ un libro.',0],['Ellos ___ mucho.',5]];
+CLOZE.ver=[['Yo ___ la tele.',0],['Ella ___ películas.',2]];
+CLOZE.aprender=[['Yo ___ español.',0],['Nosotros ___ mucho.',3]];
+CLOZE.escribir=[['Yo ___ en el cuaderno.',0],['Vosotros ___ bien.',4]];
+W.push(['ir al gimnasio','aller à la salle de sport','Tiempo libre'],['ver la tele','regarder la télé','Tiempo libre'],['esquiar','skier','Tiempo libre'],['cocinar','cuisiner','Tiempo libre'],['tocar la guitarra','jouer de la guitare','Tiempo libre'],['escribir','écrire','Tiempo libre'],['el fútbol','le football','Tiempo libre'],['el tenis','le tennis','Tiempo libre']);
+[['el bolígrafo','le stylo'],['la silla','la chaise'],['la tele','la télé'],['la hoja de papel','la feuille de papier'],['la mesa','la table'],['la papelera','la poubelle'],['la pizarra','le tableau'],['la mochila','le sac à dos'],['el cuaderno','le cahier'],['el proyector','le projecteur'],['el ordenador','l\'ordinateur'],['el libro','le livre']].forEach(x=>W.push([x[0],x[1],'Objetos de clase']));
+[['el enfermero / la enfermera','infirmier / infirmière'],['el médico / la médica','médecin'],['el veterinario / la veterinaria','vétérinaire'],['el ingeniero / la ingeniera','ingénieur(e)'],['el policía / la policía','policier / policière'],['el bombero / la bombera','pompier'],['el piloto / la piloto','pilote'],['el abogado / la abogada','avocat(e)'],['el periodista / la periodista','journaliste'],['el fotógrafo / la fotógrafa','photographe'],['el bailarín / la bailarina','danseur / danseuse'],['el músico / la música','musicien(ne)'],['el escritor / la escritora','écrivain(e)'],['el carnicero / la carnicera','boucher / bouchère'],['el panadero / la panadera','boulanger / boulangère'],['el cocinero / la cocinera','cuisinier / cuisinière'],['el camarero / la camarera','serveur / serveuse'],['el peluquero / la peluquera','coiffeur / coiffeuse'],['el arquitecto / la arquitecta','architecte'],['el carpintero / la carpintera','menuisier / menuisière'],['el mecánico / la mecánica','mécanicien(ne)'],['el electricista / la electricista','électricien(ne)'],['el tenista / la tenista','joueur / joueuse de tennis'],['el recepcionista / la recepcionista','réceptionniste'],['el informático / la informática','informaticien(ne)'],['el dependiente / la dependienta','vendeur / vendeuse'],['el cartero / la cartera','facteur / factrice'],['el director / la directora','directeur / directrice'],['el actor / la actriz','acteur / actrice'],['el empresario / la empresaria','chef d\'entreprise']].forEach(x=>W.push([x[0],x[1],'Más profesiones']));
 const CATS=[...new Set(W.map(w=>w[2]))];
 const catWords=c=>W.filter(w=>w[2]===c);
 // Phrases : [espagnol, français, groupe]
@@ -544,13 +556,6 @@ function numLesson(lo,hi){
   modes.forEach((m,i)=>steps.push(numStep(ns[i%ns.length],m)));
   return steps;
 }
-function verbLesson(keys){
-  const steps=[];const used=new Set();
-  keys.forEach(k=>(CLOZE[k]||[]).forEach(c=>{if(steps.length<6){steps.push(verbStep(k,c[1],'cloze'));used.add(k+c[1]);}}));
-  const items=shuffle(keys.flatMap(k=>[0,1,2,3,4,5].map(i=>[k,i])));
-  let j=0;while(steps.length<12&&j<items.length){const[k,i]=items[j++];steps.push(verbStep(k,i,steps.length%2?'type':'choice'));}
-  return shuffle(steps);
-}
 function phraseLesson(group){
   const idxs=shuffle(PH.map((p,i)=>i).filter(i=>PH[i][2]===group));
   const steps=[];idxs.slice(0,8).forEach((i,n)=>steps.push(phraseStep(i,n%3===2?'choice':'tiles')));
@@ -563,7 +568,7 @@ function reviewLesson(){
   const cand=[];
   W.forEach(w=>cand.push({k:'w:'+w[0],make:()=>wordStep(w,rnd(canSpeak?['esfr','fres','type','listen']:['esfr','fres','type']))}));
   for(let n=0;n<=100;n++)cand.push({k:'n:'+n,w:n>30?.5:1,make:()=>numStep(n,rnd(canSpeak?['d2w','w2d','type_w','type_d','listen']:['d2w','w2d','type_w','type_d']))});
-  Object.keys(V).forEach(k=>[0,1,2,3,4,5].forEach(i=>cand.push({k:'v:'+k+':'+i,make:()=>verbStep(k,i,rnd(['choice','type','cloze']))})));
+  Object.keys(V).forEach(k=>[0,1,2,3,4,5].forEach(i=>cand.push({k:'v:'+k+':'+i,make:()=>verbStep(k,i,rnd(['choice','cloze','choice','type']))})));
   PH.forEach((p,i)=>cand.push({k:'p:'+i,make:()=>phraseStep(i,rnd(['tiles','choice']))}));
   Object.keys(CL).forEach(k=>CL[k].items.forEach((it,i)=>cand.push({k:'c:'+k+':'+i,w:.5,make:()=>qStep(it,'c:'+k+':'+i,{sub:CL[k].sub})})));
   const out=[];let pool=cand.slice();
@@ -612,36 +617,121 @@ const XDEF={
  xescr:{id:'exam-escr',title:'Expression écrite',exam:true,build:()=>examLesson(['escr'])}};
 
 
+
+/* ===== Corrections : verbes progressifs + exercices du cahier ===== */
+const PRON=P;
+function verbCard(k){const v=V[k];return{type:'info',title:k.toUpperCase()+' · '+v.fr,html:`<table class="tbl"><tbody>${P.map((p,i)=>`<tr><td class="pron">${p}</td><td class="form">${v.f[i]}</td></tr>`).join('')}</tbody></table><div class="note">${v.note}</div><div class="muted">Lis le tableau, puis on s'entraîne pas à pas. Les erreurs reviennent toutes seules : pas de panique.</div>`};}
+function pronStep(k,i){const v=V[k];return{type:'choice',key:'vp:'+k+':'+i,prompt:v.f[i],sub:'Quel pronom va avec cette forme ? ('+k+')',options:uniqOpts(P[i],shuffle(P.filter((_,j)=>j!==i))),answer:P[i],nospk:true,note:'<b>'+v.f[i]+'</b> = '+P[i]};}
+function verbLesson(keys){
+  const steps=[],n=keys.length===1?3:keys.length===2?2:1,c2=keys.length===1?2:1;
+  keys.forEach(k=>{const v=V[k],ids=()=>shuffle([0,1,2,3,4,5]);
+    steps.push(verbCard(k));
+    steps.push(matchStep(P.map((p,i)=>[p,v.f[i],v.f[i]])));
+    ids().slice(0,n).forEach(i=>steps.push(pronStep(k,i)));
+    ids().slice(0,n).forEach(i=>steps.push(verbStep(k,i,'choice')));
+    (CLOZE[k]||[]).slice(0,c2).forEach(c=>steps.push(verbStep(k,c[1],'cloze')));
+    ids().slice(0,c2).forEach(i=>{const t=verbStep(k,i,'type');t.sub+='<br><span class="muted">Indice : '+t.answer.slice(0,-2)+'__</span>';steps.push(t);});});
+  return steps;}
+const ENDS={ar:['o','as','a','amos','áis','an'],er:['o','es','e','emos','éis','en'],ir:['o','es','e','imos','ís','en']};
+function endStep(inf,i){const cl=inf.slice(-2),st=inf.slice(0,-2),ans='-'+ENDS[cl][i];
+  const pool=[...new Set(ENDS[cl].concat(ENDS.ar,ENDS.er,ENDS.ir))].filter(x=>x!==ENDS[cl][i]).map(x=>'-'+x);
+  return{type:'choice',key:'e:'+inf+':'+i,prompt:st+'___',sub:inf+' · '+P[i]+' : quelle terminaison ?',options:uniqOpts(ans,shuffle(pool)),answer:ans,nospk:true,note:'<b>'+V[inf].f[i]+'</b>'};}
+function endLesson(){
+  const tbl=`<table class="tbl"><thead><tr><th></th><th>-ar</th><th>-er</th><th>-ir</th></tr></thead><tbody>${P.map((p,i)=>`<tr><td class="pron">${p}</td><td class="form">-${ENDS.ar[i]}</td><td class="form">-${ENDS.er[i]}</td><td class="form">-${ENDS.ir[i]}</td></tr>`).join('')}</tbody></table>`;
+  const steps=[{type:'info',title:'La recette des verbes réguliers',html:tbl+'<div class="note">1. Enlève <b>-ar / -er / -ir</b> de l\'infinitif (hablar → habl-).<br>2. Ajoute la terminaison de la personne.<br>Seul <b>-ir</b> change à nosotros (-imos) et vosotros (-ís).</div>'}];
+  const vs=['hablar','estudiar','comer','aprender','leer','vivir','escribir'];
+  for(let k=0;k<9;k++){const inf=vs[k%vs.length];steps.push(endStep(inf,Math.floor(Math.random()*6)));}
+  steps.push(verbStep('hablar',Math.floor(Math.random()*6),'choice'));steps.push(verbStep('vivir',Math.floor(Math.random()*6),'choice'));
+  return steps;}
+const FORMS=[['quieres',1],['leen',5],['leéis',4],['escribís',4],['hace',2],['tenéis',4],['tengo',0],['hago',0],['conozco',0],['ven',5],['ve',2],['queremos',3],['aprendemos',3],['vives',1],['hablas',1],['tienes',1]];
+function formsLesson(){return shuffle(FORMS).slice(0,10).map(f=>({type:'choice',key:'f:'+f[0],prompt:f[0],sub:'Quel pronom va avec cette forme ?',options:uniqOpts(P[f[1]],shuffle(P.filter((_,j)=>j!==f[1]))),answer:P[f[1]],nospk:true,note:'<b>'+f[0]+'</b> = '+P[f[1]]}));}
+// Singulier / pluriel
+const PLU=[['mujer','mujeres'],['pez','peces'],['autobús','autobuses'],['actriz','actrices'],['habitación','habitaciones'],['mamá','mamás'],['pantalón','pantalones'],['hotel','hoteles'],['universidad','universidades'],['televisión','televisiones'],['niño','niños'],['hermana','hermanas'],['león','leones'],['día','días'],['clase','clases'],['foto','fotos'],['banana','bananas'],['jueves','jueves']];
+function pluralLesson(){
+  const ps=shuffle(PLU),steps=[{type:'info',title:'Le pluriel',html:'<div class="note"><b>Voyelle</b> à la fin : + <b>s</b> (niño → niños, clase → clases).<br><b>Consonne</b> : + <b>es</b> (hotel → hoteles, universidad → universidades).<br><b>-z</b> → <b>-ces</b> (pez → peces, actriz → actrices).<br><b>-ón / -és</b> : l\'accent disparaît (habitación → habitaciones, autobús → autobuses).<br><b>-s</b> sans accent à la fin : ne change pas (jueves, lunes).</div>'}];
+  ps.slice(0,5).forEach(p=>steps.push({type:'choice',key:'pl:'+p[0],prompt:p[0],sub:'Quel est le pluriel ?',options:uniqOpts(p[1],[p[0]+'s',p[0]+'es',p[0]].filter(x=>x!==p[1])),answer:p[1],nospk:true}));
+  ps.slice(5,10).forEach(p=>steps.push({type:'type',key:'pl:'+p[0],prompt:p[0],sub:'Écris le pluriel',answer:p[1],nospk:true,say:p[1]}));
+  return steps;}
+// Fêtes et dates
+const FIESTAS=[['Día de los Santos Inocentes','el 28 de diciembre'],['Día de los Muertos','el 2 de noviembre'],['Día Internacional del Trabajo','el 1 de mayo'],['Día de Reyes','el 6 de enero'],['Día Internacional del Libro','el 23 de abril'],['Día de la Mujer Trabajadora','el 8 de marzo']];
+const DATES=[['5/8/2006','cinco de agosto de dos mil seis'],['7/12/2008','siete de diciembre de dos mil ocho'],['10/4/1970','diez de abril de mil novecientos setenta'],['4/1/1900','cuatro de enero de mil novecientos'],['10/10/1547','diez de octubre de mil quinientos cuarenta y siete']];
+function fiestaLesson(){
+  const F=shuffle(FIESTAS),steps=[{type:'info',title:'Dire la date',html:'<div class="note">Format : <b>jour + de + mois + de + année</b>.<br>5/8/2006 → <i>cinco de agosto de dos mil seis</i><br>Années : <i>dos mil…</i> (2000+), <i>mil novecientos…</i> (1900+). Pour une fête : <i>el 1 de mayo</i>.</div>'}];
+  steps.push(matchStep(F.slice(0,5).map(f=>[f[0],f[1],f[1]])));
+  F.slice(0,4).forEach(f=>steps.push({type:'choice',key:'fi:'+f[0],prompt:f[0],sub:'Quelle est la date ?',options:uniqOpts(f[1],shuffle(FIESTAS.filter(x=>x!==f)).map(x=>x[1])),answer:f[1],nospk:true}));
+  F.slice(4,6).forEach(f=>steps.push({type:'choice',key:'fi:'+f[0],prompt:f[1],sub:'Quelle fête tombe ce jour-là ?',options:uniqOpts(f[0],shuffle(FIESTAS.filter(x=>x!==f)).map(x=>x[0])),answer:f[0],nospk:true,long:true}));
+  shuffle(DATES).slice(0,3).forEach(d=>steps.push({type:'type',key:'da:'+d[0],prompt:d[0],sub:'Écris la date en toutes lettres',answer:d[1],nospk:true,say:d[1],long:true}));
+  return steps;}
+// Dialogue avec le professeur
+const DIAL=[['Hola, buenos días.','Buenos días. Perdone por el retraso.','Bonjour. Excusez-moi pour le retard.'],['¿Qué tal está?','Bien, gracias, ¿y usted?','Bien, merci, et vous ?'],['¿Cómo se llama?','Me llamo Sacha Gognet.','Je m\'appelle Sacha Gognet.'],['Perdone, ¿puede deletrear su apellido, por favor?','Sí: ge, o, ge, ene, e, te.','Oui : G, O, G, N, E, T.'],['¿De dónde es?','Soy francés, de Tours.','Je suis français, de Tours.'],['¿Habla un poco de español?','Sí, hablo un poco de español.','Oui, je parle un peu espagnol.'],['Siéntese aquí, con Harima.','Muchas gracias.','Merci beaucoup.']];
+function dialogLesson(){
+  const steps=[{type:'info',title:'Un dialogue avec le prof',html:'<div class="note">Avec un professeur on utilise <b>usted</b> (forme « il / elle ») : <i>¿Cómo se llama? ¿De dónde es?</i><br>Toi, tu réponds en <b>yo</b> : <i>Me llamo… Soy de…</i></div>'}];
+  const pool=['tú','eres','te','llamo','vives','gracias','bien','de','en','soy'];
+  DIAL.forEach((d,i)=>{const words=d[1].split(' ');const ex=shuffle(pool.filter(x=>!words.map(w=>w.toLowerCase().replace(/[.,¿?¡!:]/g,'')).includes(x))).slice(0,2);
+    steps.push({type:'tiles',key:'di:'+i,prompt:d[0],long:true,sub:'Le prof dit ça. Réponds : « '+d[2]+' »',answer:d[1],words:shuffle(words.concat(ex)),say:d[1],nospk:true});});
+  steps.push({type:'type',key:'di:spell',prompt:'GOGNET',sub:'Épelle ce nom comme à l\'oral (nom des lettres)',answer:'ge, o, ge, ene, e, te',nospk:true,say:'ge, o, ge, ene, e, te'});
+  return steps;}
+SIT.push({t:'Con el profesor',fr:'Tu arrives en retard : salue le professeur, présente-toi, épelle ton nom, dis d\'où tu viens et si tu parles espagnol.',ph:[['Buenos días. Perdone por el retraso.','Bonjour. Excusez-moi pour le retard.'],['Bien, gracias, ¿y usted?','Bien, merci, et vous ?'],['Me llamo…','Je m\'appelle…'],['Soy francés / francesa, de…','Je suis français(e), de…'],['Hablo un poco de español.','Je parle un peu espagnol.'],['Muchas gracias.','Merci beaucoup.']],modelo:'Buenos días. Perdone por el retraso. Bien, gracias, ¿y usted? Me llamo Sacha Gognet. Soy francés, de Tours. Hablo un poco de español. Muchas gracias.'});
+// Banques d'exercices issues du cahier
+CL.art.items.push(['___ águila','el',['la','los','las'],'<i>águila</i> est féminin mais prend <b>el</b> (a- tonique) : el águila, el agua, el aula. Au pluriel : las águilas.'],['___ aula','el',['la','los','las'],'el aula, el agua, el águila : <b>el</b> devant a- tonique.'],['___ agua','el',['la','los','las'],'<b>el agua</b> (mais las aguas).'],['___ pantalones','los',['las','el','la'],'Pluriel masculin : <b>los</b>.'],['___ tijeras','las',['los','el','la'],'Pluriel féminin : <b>las</b>.'],['___ lápices','los',['las','el','la'],'<i>lápiz</i> est masculin → los lápices.'],['___ mano','la',['el','los','las'],'Exception : <b>la mano</b> est féminin.'],['___ problema','el',['la','los','las'],'<b>el problema</b>, el idioma, el día : masculins malgré le -a.']);
+const NEL=['cine','cuaderno','cumpleaños','día','hotel','idioma','lápiz','libro','minuto','museo','planeta','problema','teatro','teléfono','vaso','viernes'];
+const NLA=['atención','cama','casa','ciudad','expresión','foto','habitación','lámpara','leche','luz','mano','noche','página','radio','universidad','ventana'];
+CL.nom={sub:'El o la ?',items:[]};
+NEL.forEach(n=>CL.nom.items.push(['___ '+n,'el',['la','los','las'],'<b>el '+n+'</b>'+(/^(día|idioma|planeta|problema)$/.test(n)?' : masculin malgré le -a.':'.')]));
+NLA.forEach(n=>CL.nom.items.push(['___ '+n,'la',['el','los','las'],'<b>la '+n+'</b>'+(/(ción|sión|dad)$/.test(n)?' : -ción, -sión, -dad sont féminins.':'.')]));
+CL.aldel={sub:'al, del, de ou a ?',items:[['Queremos ver ___ jefe de estudios.','al',['del','a la','de la'],'a + el = <b>al</b>.'],['Cierra la puerta ___ jardín, por favor.','del',['al','de la','a el'],'de + el = <b>del</b>.'],['Tenéis que ir ___ aula 15.','al',['del','a la','de la'],'<i>el aula</i> → a + el = <b>al aula</b>.'],['Los padres ___ Sofía viven en Lima.','de',['del','al','a'],'Pas d\'article devant un prénom : <b>de</b> Sofía.'],['Ese coche es ___ padre de Mónica.','del',['de','al','de la'],'de + el padre = <b>del</b> padre.'],['Montevideo es la capital ___ Uruguay.','de',['del','al','a'],'Uruguay : pas d\'article → <b>de</b>.'],['Vivimos cerca ___ centro.','del',['de','al','a'],'cerca de + el centro = <b>del</b> centro.'],['Voy ___ cine.','al',['del','a la','de'],'a + el = <b>al</b>.'],['Vengo ___ gimnasio.','del',['al','de la','a'],'de + el = <b>del</b>.'],['Hablo ___ profesor.','al',['del','a la','de'],'hablar a + el = <b>al</b>.']]};
+CL.gen.items.push(['Somos ___ . (nous, des filles blondes)','rubias',['rubio','rubios','rubia'],'Féminin pluriel : rubi<b>as</b>.'],['Marga es muy ___ .','alegre',['alegra','alegres','alegro'],'Adjectif en -e : même forme au masculin et féminin.'],['Estamos muy ___ . (nous, des filles)','cansadas',['cansado','cansados','cansada'],'Féminin pluriel : cansad<b>as</b>.'],['¡Somos ___ ! (nous, les champions)','campeones',['campeón','campeona','campeonas'],'Pluriel de campeón : campe<b>ones</b>.'],['Las hijas de Andrés son muy ___ .','jóvenes',['joven','jóvena','jovenes'],'Pluriel de joven : jóv<b>enes</b> (l\'accent apparaît).'],['Chus y Lolo no son ___ .','felices',['feliz','felizes','felizs'],'feliz → fe<b>lices</b> (z → c).'],['Concha y Rodrigo son muy ___ .','simpáticos',['simpático','simpática','simpáticas'],'Un homme et une femme : masculin pluriel.'],['Me gustan las rosas ___ .','blancas',['blanco','blancos','blanca'],'Féminin pluriel : blanc<b>as</b>.']);
+CL.pos.items.push(['¿Dónde están ___ libros? (à vous, vos amis)','vuestros',['vuestras','sus','nuestros'],'vosotros → <b>vuestro/a/os/as</b>.'],['Chicos, ¿dónde está ___ casa? (votre)','vuestra',['vuestro','su','tu'],'casa est féminin : vuestr<b>a</b>.'],['Nosotros queremos ver ___ profesor. (notre)','nuestro',['nuestra','vuestro','su'],'profesor masculin : nuestr<b>o</b>.'],['Nosotros vivimos con ___ padres. (nos)','nuestros',['nuestro','nuestras','sus'],'Pluriel masculin : nuestr<b>os</b>.']);
+const NAC=[['Paraguay','paraguayo'],['Chile','chileno'],['México','mexicano'],['la República Dominicana','dominicano'],['Argentina','argentino'],['España','español'],['Nicaragua','nicaragüense'],['Costa Rica','costarricense'],['Uruguay','uruguayo'],['El Salvador','salvadoreño'],['Ecuador','ecuatoriano'],['Filipinas','filipino'],['Honduras','hondureño'],['Cuba','cubano'],['Panamá','panameño'],['Bolivia','boliviano'],['Guatemala','guatemalteco'],['Puerto Rico','puertorriqueño'],['Venezuela','venezolano'],['Perú','peruano'],['Colombia','colombiano']];
+CL.nac={sub:'Pays et nationalités',items:[]};
+NAC.forEach((p,i)=>{const o=[1,5,9].map(d=>NAC[(i+d)%NAC.length]);
+  CL.nac.items.push(['Un chico de '+p[0]+' es ___ .',p[1],o.map(x=>x[1]),'<b>'+p[0]+'</b> → '+p[1]+' / '+(p[1].endsWith('o')?p[1].slice(0,-1)+'a':p[1].endsWith('ol')?p[1]+'a':p[1])+'.']);
+  CL.nac.items.push(['Un chico '+p[1]+' viene de ___ .',p[0],o.map(x=>x[0]),'<b>'+p[1]+'</b> → '+p[0]+'.']);});
+
 const UNITS=[
  {id:'u0',cls:'u0',sub:'Unidad 0',title:'Palabras',lessons:[
   {id:'saludos',title:'Saludos',build:()=>vocabLesson(catWords('Saludos'))},
-  {id:'colores',title:'Colores',build:()=>vocabLesson(catWords('Colores'))},
   {id:'alfabeto',title:'El alfabeto',build:alphaLesson},
+  {id:'colores',title:'Colores',build:()=>vocabLesson(catWords('Colores'))},
   {id:'dias',title:'Días',build:()=>vocabLesson(catWords('Días'))},
   {id:'num10',title:'Números 0-10',build:()=>numLesson(0,10)},
-  {id:'num30',title:'Números 11-30',build:()=>numLesson(11,30)}]},
+  {id:'num30',title:'Números 11-30',build:()=>numLesson(11,30)},
+  {id:'clase',title:'Las cosas de la clase',build:()=>vocabLesson(catWords('Objetos de clase'))},
+  {id:'fiestas',title:'Fiestas y fechas',build:fiestaLesson}]},
  {id:'u1',cls:'u1',sub:'Unidad 1',title:'Identidades',lessons:[
-  {id:'ser',title:'El verbo ser',build:()=>verbLesson(['ser'])},
-  {id:'tener',title:'Tener y llamarse',build:()=>verbLesson(['tener','llamarse'])},
   {id:'paises',title:'Países y nacionalidades',build:()=>vocabLesson(catWords('Países'))},
+  {id:'nacionalidades',title:'Nacionalidades',build:()=>bankLesson('nac')},
   {id:'prof',title:'Profesiones',build:()=>vocabLesson(catWords('Profesiones'))},
-  {id:'regulares',title:'Verbos en -ar -er -ir',build:()=>verbLesson(['hablar','estudiar','comer','vivir'])},
+  {id:'profes2',title:'Más profesiones',build:()=>vocabLesson(catWords('Más profesiones'))},
   {id:'preguntas',title:'Preguntas',build:()=>vocabLesson(catWords('Preguntas'),PH.map((p,i)=>i).filter(i=>PH[i][2]==='preg'))},
   {id:'present',title:'Presentarse',build:()=>phraseLesson('pres')},
   {id:'quien',title:'¿Quién es?',build:()=>phraseLesson('preg')},
+  {id:'dialogo',title:'Diálogo con el profesor',build:dialogLesson},
   {id:'num100',title:'Números 31-100',build:()=>numLesson(31,100)},
+  {id:'telefono',title:'Teléfonos',build:phoneLesson}]},
+ {id:'u2',cls:'u2',sub:'Unidad 2',title:'Los verbos, pas à pas',lessons:[
+  {id:'ser',title:'El verbo ser',build:()=>verbLesson(['ser'])},
+  {id:'tener',title:'Tener y llamarse',build:()=>verbLesson(['tener','llamarse'])},
+  {id:'termin',title:'La recette -ar -er -ir',build:endLesson},
+  {id:'ar',title:'Verbos en -ar',build:()=>verbLesson(['hablar','estudiar'])},
+  {id:'er',title:'Verbos en -er',build:()=>verbLesson(['comer','aprender','leer'])},
+  {id:'ir',title:'Verbos en -ir',build:()=>verbLesson(['vivir','escribir'])},
+  {id:'pronombres',title:'¿Qué pronombre ?',build:formsLesson},
+  {id:'querer',title:'Querer y entender',build:()=>verbLesson(['querer','entender'])},
+  {id:'verhacer',title:'Ver y hacer',build:()=>verbLesson(['ver','hacer'])},
+  {id:'saber',title:'Saber y conocer',build:()=>verbLesson(['saber','conocer'])},
+  {id:'gustar',title:'Gustar',build:()=>verbLesson(['gustar'])}]},
+ {id:'u3',cls:'u3',sub:'Unidad 3',title:'Gramática y vida',lessons:[
   {id:'articulos',title:'Los artículos',build:()=>bankLesson('art')},
+  {id:'elola',title:'¿El o la ?',build:()=>bankLesson('nom')},
+  {id:'aldel',title:'Al y del',build:()=>bankLesson('aldel')},
+  {id:'plural',title:'Singular y plural',build:pluralLesson},
   {id:'genero',title:'Género y número',build:()=>bankLesson('gen')},
   {id:'tuusted',title:'Tú, usted, vosotros',build:()=>bankLesson('tu')},
-  {id:'telefono',title:'Teléfonos',build:phoneLesson}]},
- {id:'u2',cls:'u2',sub:'Unidad 2',title:'Planes',lessons:[
-  {id:'familia',title:'La familia',build:()=>vocabLesson(catWords('Familia'))},
-  {id:'tiempo',title:'Tiempo libre',build:()=>vocabLesson(catWords('Tiempo libre'))},
-  {id:'querer',title:'Querer y entender',build:()=>verbLesson(['querer','entender'])},
-  {id:'saber',title:'Saber, conocer, hacer',build:()=>verbLesson(['saber','conocer','hacer'])},
   {id:'posesivos',title:'Mi, tu, su',build:()=>bankLesson('pos')},
   {id:'conectores',title:'Muy, porque, para',build:()=>bankLesson('grad')},
-  {id:'gustar',title:'Gustar y palabras útiles',build:()=>vocabLesson(catWords('Palabras útiles')).concat(verbLesson(['gustar']).slice(0,3))}]}
+  {id:'familia',title:'La familia',build:()=>vocabLesson(catWords('Familia'))},
+  {id:'tiempo',title:'Tiempo libre',build:()=>vocabLesson(catWords('Tiempo libre'))}]}
 ];
 const ALL=UNITS.flatMap(u=>u.lessons.map(l=>Object.assign({unit:u},l)));
 
@@ -803,6 +893,7 @@ function gGram(){return`<div class="card stack"><h3>Les articles</h3><table clas
   <div class="card stack"><h3>Accorder l'adjectif</h3><div class="note">Masculin → féminin : -o → <b>-a</b> (famoso → famosa). Pluriel : + <b>-s</b> (famosos). Nationalités en consonne : español → españ<b>ola</b>, francés → franc<b>esa</b>. Mots en -e, -ista : même forme (cantante, futbolista).</div></div>
   <div class="card stack"><h3>Les possessifs</h3><table class="tbl"><tbody><tr><td class="pron">mon / ma / mes</td><td class="form">mi / mis</td></tr><tr><td class="pron">ton / ta / tes</td><td class="form">tu / tus</td></tr><tr><td class="pron">son / sa / ses</td><td class="form">su / sus</td></tr><tr><td class="pron">notre</td><td class="form">nuestro / a</td></tr></tbody></table><div class="muted">Le possessif s'accorde avec <b>l'objet possédé</b>, pas avec le possesseur.</div></div>
   <div class="card stack"><h3>Petits mots utiles</h3><div class="note"><b>muy</b> très · <b>bastante</b> assez · <b>un poco</b> un peu · <b>también</b> aussi<br><b>porque</b> parce que (cause) · <b>para</b> + infinitif = pour (but)</div></div>
+  <div class="card stack"><h3>Pluriel, al et del</h3><div class="note">Voyelle : + <b>s</b> · consonne : + <b>es</b> · -z → <b>-ces</b> · -ón / -és : l'accent disparaît (habitación → habitaciones).<br><b>a + el = al</b> · <b>de + el = del</b> (mais « de la », « a la » ne changent pas).<br><b>el agua, el águila, el aula</b> : féminins, mais <b>el</b> devant a- tonique.</div></div>
   <div class="card stack"><h3>Alphabet</h3><div class="grid">${ALPHA.map(a=>`<button class="cell" data-say="${a[1]}"><b>${a[0].toUpperCase()}</b><span>${a[1]}</span></button>`).join('')}</div></div>`;}
 
 /* ===================== MOTEUR DE LEÇON ===================== */
